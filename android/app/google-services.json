@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1053506622292",
+    "project_id": "pfa2-29e6e",
+    "storage_bucket": "pfa2-29e6e.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1053506622292:android:3085b8b54bfaa07fa8eec1",
+        "android_client_info": {
+          "package_name": "com.example.pfa2"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDTGgRUoaMrzjtlnMKXdIS5M8UX_ddzTjw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

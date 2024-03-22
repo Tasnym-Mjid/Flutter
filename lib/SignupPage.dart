@@ -1,0 +1,244 @@
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'LoginPage.dart';
+
+class SignUpScreen extends StatelessWidget {
+  final TextEditingController _usernameController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _confirmPasswordController = TextEditingController();
+  final TextEditingController _roleController = TextEditingController();
+  final TextEditingController _lastNameController = TextEditingController();
+
+
+
+  //authentificate the user
+  void signUp(BuildContext context) async {
+    try {
+      if (_passwordController.text != _confirmPasswordController.text) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Les mots de passe ne correspondent pas")),
+        );
+        return;
+      }
+
+      UserCredential userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
+        email: _emailController.text,
+        password: _passwordController.text,
+      );
+
+      // Enregistrez d'autres informations de l'utilisateur si nécessaire.
+      // Par exemple, vous pouvez enregistrer le nom d'utilisateur dans une base de données Firestore.
+      // Firestore.instance.collection('users').doc(userCredential.user.uid).set({
+      //   'username': _usernameController.text,
+      //   'email': _emailController.text,
+      //   // Ajoutez d'autres champs d'informations utilisateur ici
+      // });
+
+      // Affichez un message de succès ou naviguez vers une autre page.
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Inscription réussie pour ${userCredential.user?.email}'),
+          duration: Duration(seconds: 2),
+        ),
+      );
+
+      // Navigate to the login screen after successful sign up.
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => LoginScreen()),
+      );
+      addUserDetails(_usernameController.text,
+          _lastNameController.text,
+          _roleController.text,
+          _emailController.text);
+    } catch (e) {
+      // Gérez les erreurs ici, par exemple affichez un message d'erreur à l'utilisateur
+      print("Erreur d'inscription : $e");
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Erreur d\'inscription: $e'),
+          duration: Duration(seconds: 2),
+        ),
+      );
+    }
+
+  }
+  addUserDetails(String username,String lastname,String role,String email  )async{
+    await FirebaseFirestore.instance.collection('users').add({
+      'username':username,
+      'lastname':lastname,
+      'role':role,
+      'email':email,
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      resizeToAvoidBottomInset: true,
+      backgroundColor: Colors.white,
+      appBar: AppBar(
+        elevation: 0,
+        backgroundColor: Colors.white,
+        leading: IconButton(
+          onPressed: () {
+            Navigator.pop(context);
+          },
+          icon: Icon(
+            Icons.arrow_back_ios,
+            size: 20,
+            color: Colors.black,
+          ),
+        ),
+      ),
+      body: SingleChildScrollView(
+        child: Container(
+          padding: EdgeInsets.symmetric(horizontal: 40),
+          height: MediaQuery.of(context).size.height - 50,
+          width: double.infinity,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: <Widget>[
+              Column(
+                children: <Widget>[
+                  Text(
+                    "Sign up",
+                    style: TextStyle(
+                      fontSize: 30,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  SizedBox(height: 20,),
+                  Text(
+                    "Create an account, It's free ",
+                    style: TextStyle(
+                      fontSize: 15,
+                      color: Colors.grey[700],
+                    ),
+                  ),
+                ],
+              ),
+              Column(
+                children: <Widget>[
+                  TextFormField(
+                    controller: _usernameController,
+                    decoration: InputDecoration(
+                      labelText: 'Username',
+                      prefixIcon: Icon(Icons.person),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10.0),
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 20.0),
+                  TextFormField(
+                    controller: _lastNameController,
+                    decoration: InputDecoration(
+                      labelText: 'Lastname',
+                      prefixIcon: Icon(Icons.person),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10.0),
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 20.0),
+                  TextFormField(
+                    controller: _roleController,
+                    decoration: InputDecoration(
+                      labelText: 'Role',
+                      prefixIcon: Icon(Icons.add_circle),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10.0),
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 20.0),
+                  TextFormField(
+                    controller: _emailController,
+                    decoration: InputDecoration(
+                      labelText: 'Email',
+                      prefixIcon: Icon(Icons.email),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10.0),
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 20.0),
+                  TextFormField(
+                    controller: _passwordController,
+                    decoration: InputDecoration(
+                      labelText: 'Password',
+                      prefixIcon: Icon(Icons.lock),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10.0),
+                      ),
+                    ),
+                    obscureText: true,
+                  ),
+                  SizedBox(height: 20.0),
+                  TextFormField(
+                    controller: _confirmPasswordController,
+                    decoration: InputDecoration(
+                      labelText: 'Confirm Password',
+                      prefixIcon: Icon(Icons.lock),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10.0),
+                      ),
+                    ),
+                    obscureText: true,
+                  ),
+                ],
+              ),
+              Container(
+                padding: EdgeInsets.only(top: 3, left: 3),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(50),
+                  border: Border(
+                    bottom: BorderSide(color: Colors.black),
+                    top: BorderSide(color: Colors.black),
+                    left: BorderSide(color: Colors.black),
+                    right: BorderSide(color: Colors.black),
+                  ),
+                ),
+                child: MaterialButton(
+                  minWidth: double.infinity,
+                  height: 60,
+                  onPressed: () => signUp(context),
+                  color: Color(0xff0095FF),
+                  elevation: 0,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(50),
+                  ),
+                  child: Text(
+                    "Sign up",
+                    style: TextStyle(
+                      fontWeight: FontWeight.w600,
+                      fontSize: 18,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Text("Already have an account?"),
+                  Text(
+                    " Login",
+                    style: TextStyle(
+                      fontWeight: FontWeight.w600,
+                      fontSize: 18,
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+
+}
+}
