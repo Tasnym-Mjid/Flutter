@@ -1,6 +1,8 @@
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter/material.dart';
 
+import 'Firebase/readListView.dart';
+
 class AppointmentScreen extends StatefulWidget {
   @override
   _AppointmentScreenState createState() => _AppointmentScreenState();
@@ -28,84 +30,23 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
         ],
       ),
       appBar: AppBar(
-        title: Text('Passer un rendez-vous'),
+        title: Text('Liste des medecins',
+            style: TextStyle(
+            fontSize: 18,
+                fontWeight: FontWeight.bold,
+              color: Colors.black
+        ),),
       ),
       body: Padding(
         padding: EdgeInsets.all(16.0),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Choisissez un médecin :',
-              style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
-            ),
-            SizedBox(height: 10),
-            DropdownButtonFormField(
-              value: _selectedDoctor.isNotEmpty ? _selectedDoctor : null,
-              hint: Text('Sélectionnez un médecin'),
-              items: _doctors.map((doctor) {
-                return DropdownMenuItem(
-                  value: doctor,
-                  child: Text(doctor),
-                );
-              }).toList(),
-              onChanged: (value) {
-                setState(() {
-                  _selectedDoctor = value.toString();
-                });
-              },
-            ),
-            SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () {
-                // Logique pour enregistrer le rendez-vous
-                if (_selectedDoctor.isNotEmpty) {
-                  // Ici, vous pouvez ajouter la logique pour enregistrer le rendez-vous
-                  // par exemple, vous pouvez ajouter le rendez-vous à une collection Firestore
-                  // avec les détails comme le nom du médecin, l'heure, la date, etc.
-                  // Une fois le rendez-vous enregistré, vous pouvez afficher un message de succès ou naviguer vers une autre page
-                  showDialog(
-                    context: context,
-                    builder: (BuildContext context) {
-                      return AlertDialog(
-                        title: Text('Succès'),
-                        content: Text('Rendez-vous passé avec $_selectedDoctor'),
-                        actions: [
-                          TextButton(
-                            onPressed: () {
-                              Navigator.pop(context);
-                            },
-                            child: Text('OK'),
-                          ),
-                        ],
-                      );
-                    },
-                  );
-                } else {
-                  // Afficher un message si aucun médecin n'est sélectionné
-                  showDialog(
-                    context: context,
-                    builder: (BuildContext context) {
-                      return AlertDialog(
-                        title: Text('Erreur'),
-                        content: Text('Veuillez sélectionner un médecin.'),
-                        actions: [
-                          TextButton(
-                            onPressed: () {
-                              Navigator.pop(context);
-                            },
-                            child: Text('OK'),
-                          ),
-                        ],
-                      );
-                    },
-                  );
-                }
-              },
-              child: Text('Confirmer le rendez-vous'),
-            ),
-          ],
-        ),
+         crossAxisAlignment: CrossAxisAlignment.stretch,
+         children: [
+           Expanded(
+              child: ReadListView(), // Afficher la liste des médecins à l'intérieur d'un Expanded pour l'étendre sur tout l'espace disponible
+    ),
+    ],
+      ),
       ),
     );
   }
