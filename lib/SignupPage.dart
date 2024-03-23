@@ -53,6 +53,7 @@ class SignUpScreen extends StatelessWidget {
           _lastNameController.text,
           _roleController.text,
           _emailController.text);
+      separateUsers();
     } catch (e) {
       // Gérez les erreurs ici, par exemple affichez un message d'erreur à l'utilisateur
       print("Erreur d'inscription : $e");
@@ -73,6 +74,36 @@ class SignUpScreen extends StatelessWidget {
       'email':email,
     });
   }
+
+  void separateUsers() async {
+    // Récupérer tous les documents de la collection 'users'
+    QuerySnapshot querySnapshot = await FirebaseFirestore.instance.collection('users').get();
+
+    querySnapshot.docs.forEach((doc) async {
+      Map<String, dynamic> userData = doc.data() as Map<String, dynamic>;
+      Map<String, dynamic> dataToTransfer = {
+        'username': userData['username'], // Champs à transférer depuis la collection 'users'
+        'lastname': userData['lastname'],
+         'role': userData['role'],
+        // Ajoutez d'autres champs selon vos besoins
+      };
+
+      // Vérifier le type d'utilisateur
+      String userType = userData['role']; // Suppose que vous avez un champ 'userType' pour indiquer le type d'utilisateur
+
+      // Ajouter l'utilisateur à la collection appropriée
+      if (userType == 'medecin') {
+        // Ajouter l'utilisateur à la collection des médecins
+        await FirebaseFirestore.instance.collection('doctors').doc(doc.id).set(dataToTransfer);
+      } else if (userType == 'patient') {
+        // Ajouter l'utilisateur à la collection des patients
+        await FirebaseFirestore.instance.collection('patients').doc(doc.id).set(dataToTransfer);
+      }
+    });
+
+    print('Séparation des utilisateurs terminée.');
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -240,5 +271,5 @@ class SignUpScreen extends StatelessWidget {
       ),
     );
 
-}
+  }
 }

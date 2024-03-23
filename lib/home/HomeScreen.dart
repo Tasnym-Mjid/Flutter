@@ -1,6 +1,10 @@
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:pfa2/Randez-vous_Page.dart';
 import 'package:pfa2/main.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 
 
 class HomeScreen extends StatefulWidget {
@@ -27,124 +31,166 @@ class _HomeScreenState extends State<HomeScreen> {
 
         ],
       ),
-      appBar:AppBar(
-        title: Text(
-          "DocDash",
-           style:TextStyle(
-             fontSize:20,
-             fontWeight: FontWeight.w600,
-             color: Colors.blue
-           ) ,),
-        actions: <Widget>[
-          IconButton(
-              onPressed:() {},
-              icon: const Icon(Icons.settings, size: 26),
-              color: Colors.blue,
-          ),
-        ],
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children:<Widget> [
-            Padding(
-              padding: EdgeInsets.all(15),
-              child: Text(
-                  "Bienvenu notre cher patient",
-                  textAlign: TextAlign.start,
-                  style: TextStyle(
-                    fontWeight: FontWeight.w600,
-                    fontSize: 30,
-                  )
-              ),
-            ),
-            Padding(
-              padding: EdgeInsets.all(15),
-              child: Text(
-                  "Que souhaitez vous faire?",
-                  textAlign: TextAlign.start,
-                  style: TextStyle(
-                    fontWeight: FontWeight.w600,
-                    fontSize: 15,
-                  )
-              ),
-            ),
-            SizedBox(height: 20,),
-            MaterialButton(
-              minWidth: double.infinity,
-              height: 60,
-              onPressed: () {
-                // Action à effectuer lors du clic sur le bouton
-              },
-              color: Color(0xff0095FF),
-              elevation: 0,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(50),
-              ),
-              child: Row(
-                // Alignement des icônes et du texte au centre
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  Icon(
-                    Icons.folder_rounded, // Icône à afficher (par exemple)
-                    color: Colors.white,   // Couleur de l'icône
+      body: SafeArea(
+        child:Padding(
+         padding: const EdgeInsets.symmetric(horizontal: 25.0),
+         child: Column(
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text('Hi Jared',
+                style: TextStyle(
+                  color: Colors.black,
+                  fontSize:24,
+                  fontWeight:FontWeight.bold,
+                ),),
+                Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(12),
                   ),
-                  SizedBox(width: 8),  // Espacement entre l'icône et le texte
-                  Text(
-                    "Consulter Dossier médical",
-                    style: TextStyle(
-                      fontWeight: FontWeight.w600,
-                      fontSize: 18,
-                      color: Colors.white,
-                    ),
-                  ),
-                ],
-              ),
-            ),
+                  padding: EdgeInsets.all(16),
+                  child:Icon(Icons.settings,
+                    color:Colors.blue,size: 30),
+                ),
 
-            SizedBox(height:20),
-            MaterialButton(
-              minWidth: double.infinity,
-              height: 60,
-              onPressed: () {
-                // Action à effectuer lors du clic sur le bouton
-              },
-              color: Color(0xff0095FF),
-              elevation: 0,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(50),
-              ),
-              child: Row(
-                // Alignement des icônes et du texte au centre
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  Icon(
-                    Icons.calendar_month, // Icône à afficher
-                    color: Colors.white,   // Couleur de l'icône
+              ],
+            ),
+            SizedBox(height: 25,),
+            Row(
+              children: [
+                Text('Qu\'est ce que vous souhaitez faire?',
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontSize:18,
+                    fontWeight:FontWeight.bold,
                   ),
-                  SizedBox(width: 8),  // Espacement entre l'icône et le texte
-                  Text(
-                    "Passer Rendez-vous",
-                    style: TextStyle(
-                      fontWeight: FontWeight.w600,
-                      fontSize: 18,
-                      color: Colors.white,
+                ),
+              ],
+            ),
+            SizedBox(height: 25,),
+            Column(
+              children: [
+                ElevatedButton(onPressed:(){},
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.blue[300],
+                    elevation: 8,
+                  ),
+
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                      Icon(
+                      Icons.folder_rounded, // Icône à afficher (par exemple)
+                      color: Colors.black,   // Couleur de l'icône
                     ),
-                  ),
+                     SizedBox(width: 8),  // Espacement entre l'icône et le texte
+                     Text(
+                      "Consulter Dossier médical",
+                      style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 18,
+                      color: Colors.black,
+                    ),
+
+                    ),
+
                 ],
+                    ),
+                ),
+                SizedBox(height: 16,),
+                ElevatedButton(onPressed:(){
+                  Navigator.pushReplacement(context,
+                      MaterialPageRoute(builder: (context) => AppointmentScreen())
+                  );
+                },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.blue[300],
+                    elevation: 8,
+                  ),
+
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      Icon(
+                        Icons.calendar_month, // Icône à afficher (par exemple)
+                        color: Colors.black,   // Couleur de l'icône
+                      ),
+                      SizedBox(width: 8),  // Espacement entre l'icône et le texte
+                      Text(
+                        "Passer un rendez-vous",
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 18,
+                          color: Colors.black,
+                        ),
+
+                      ),
+
+                    ],
+                  ),
+                ),
+                SizedBox(height: 16,),
+                ElevatedButton(onPressed:(){},
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.blue[300],
+                    elevation: 8,
+                  ),
+
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      Icon(
+                        Icons.local_hospital, // Icône à afficher (par exemple)
+                        color: Colors.black,   // Couleur de l'icône
+                      ),
+                      SizedBox(width: 8),  // Espacement entre l'icône et le texte
+                      Text(
+                        "Demander Service d\'urgence",
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 18,
+                          color: Colors.black,
+                        ),
+
+                      ),
+
+                    ],
+                  ),
+                ),
+              ],
+
+             ),
+            SizedBox(height: 25,),
+            Row(
+              children: [
+                Text('Randez-vous pour aujourd\'hui',
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontSize:18,
+                    fontWeight:FontWeight.bold,
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(height: 25,),
+            Expanded(
+              child: Container(
+                color: Colors.blue[300],
+
               ),
             )
-
-
-
-
-
-
           ],
+
+
         ),
       ),
 
 
+
+
+    ),
     );
   }
 }

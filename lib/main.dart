@@ -10,7 +10,7 @@ void main() async {
   await Firebase.initializeApp(
     options: const FirebaseOptions(
       apiKey: "AIzaSyDTGgRUoaMrzjtlnMKXdIS5M8UX_ddzTjw",//  ==   current_key in google-services.json file
-      appId: "1:1053506622292:android:3085b8b54bfaa07fa8eec1 ", // ==  mobilesdk_app_id  in google-services.json file
+      appId: "1:1053506622292:android:3085b8b54bfaa07fa8eec1", // ==  mobilesdk_app_id  in google-services.json file
       messagingSenderId: "1053506622292", // ==   project_number in google-services.json file
       projectId: "pfa2-29e6e", // ==   project_id   in google-services.json file
     ),
