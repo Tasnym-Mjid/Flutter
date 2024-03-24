@@ -2,6 +2,7 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:pfa2/home/HomeScreen.dart';
+import 'package:pfa2/home/Main_layout.dart';
 import 'package:pfa2/main.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -26,7 +27,7 @@ class _LoginScreenState extends State<LoginScreen> {
       // Si la connexion réussit, naviguez vers la page d'accueil
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => const HomeScreen()),
+        MaterialPageRoute(builder: (context) => const MainLayout()),
       );
     } catch (e) {
       // Gérez les erreurs ici, par exemple affichez un message d'erreur à l'utilisateur
@@ -179,5 +180,4 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 }
 
-class FirebaseUser {
-}
+

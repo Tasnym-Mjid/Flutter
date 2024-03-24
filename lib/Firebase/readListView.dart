@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:pfa2/Randez-vous_Page.dart';
 
 class ReadListView extends StatefulWidget {
   const ReadListView({super.key});
@@ -44,10 +45,14 @@ class _ReadListViewState extends State<ReadListView> {
                 ),
                 subtitle: Text(docs[index]['lastname']),
                 trailing: ElevatedButton(
-                  onPressed: () {
-                    // Action à effectuer lorsqu'on appuie sur le bouton "Prendre un rendez-vous"
-                    // Vous pouvez implémenter ici la logique pour passer un rendez-vous avec le médecin
-                  },
+                  onPressed: (){
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => AppointmentScreen(),
+                      ),
+                    );
+                  } ,
                   style: ElevatedButton.styleFrom(
                     foregroundColor: Colors.white, backgroundColor: Colors.blue, // Couleur du texte du bouton
                   ),
