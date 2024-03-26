@@ -12,6 +12,8 @@ class SignUpScreen extends StatelessWidget {
   final List<String> _roles = ['Patient', 'Médecin'];
   String _selectedRole = 'Patient';
 
+  get uid => null;
+
   void signUp(BuildContext context) async {
     try {
       if (_passwordController.text != _confirmPasswordController.text) {
@@ -27,7 +29,10 @@ class SignUpScreen extends StatelessWidget {
       );
 
       // Créer un nouvel utilisateur dans la collection 'users'
-      await FirebaseFirestore.instance.collection('users').doc(userCredential.user?.uid).set({
+      User? user = FirebaseAuth.instance.currentUser;
+      String? userId = user?.uid;
+      await FirebaseFirestore.instance.collection('users').doc(userId).set({
+        'uid':userId,
         'username': _usernameController.text,
         'lastname': _lastnameController.text,
         'email': _emailController.text,
