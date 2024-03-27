@@ -18,8 +18,15 @@ class _MedicalRecordPageState extends State<MedicalRecordPage> {
     MedicalHistoryScreen(),
     ConsultationScreen(),
     AllergiesScreen(),
-
     // Ajoutez les autres écrans ici
+  ];
+
+  List<String> categories = [
+    'Résultats labos',
+    'Antécédents',
+    'Consultations',
+    'Allergies',
+    // Ajoutez les autres catégories si nécessaire
   ];
 
   @override
@@ -50,104 +57,83 @@ class _MedicalRecordPageState extends State<MedicalRecordPage> {
         title: Text('Dossier médical'),
         backgroundColor: Colors.blue, // Couleur de l'app bar
       ),
-      body: StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
-        stream: FirebaseFirestore.instance.collection('Dossier médical').doc(uid).snapshots(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(
-              child: CircularProgressIndicator(), // Indicateur de chargement
-            );
-          } else if (snapshot.hasError) {
-            return Center(
-              child: Text('Une erreur est survenue. Veuillez réessayer plus tard.'), // Afficher un message d'erreur en cas d'erreur
-            );
-          } else if (!snapshot.hasData || !snapshot.data!.exists) {
-            return Center(
-              child: Text('Aucune donnée trouvée.'), // Afficher un message si aucune donnée n'est disponible
-            );
-          } else {
-            // Les données sont disponibles, vous pouvez maintenant les afficher
-            Map<String, dynamic> medicalData = snapshot.data!.data()!;
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              //crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    //crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Image.asset(
-                        'images/account.png', // Chemin vers votre image
-                        height: 170, // Hauteur de l'image
-                        width: 150, // Largeur de l'image, réglée sur la largeur maximale disponible
-                        fit: BoxFit.cover, // Ajustement de l'image pour couvrir le conteneur
-                      ),
-                      SizedBox(height: 16),
-                      StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
-                        stream: FirebaseFirestore.instance.collection('patients').doc(uid).snapshots(),
-                        builder: (context, patientSnapshot) {
-                          if (patientSnapshot.connectionState == ConnectionState.waiting) {
-                            return CircularProgressIndicator(); // Indicateur de chargement
-                          } else if (patientSnapshot.hasError) {
-                            return Text('Erreur de chargement du nom du patient');
-                          } else if (!patientSnapshot.hasData || !patientSnapshot.data!.exists) {
-                            return Text('Nom de patient non trouvé');
-                          } else {
-                            String patientName = patientSnapshot.data!.data()!['username'];
-                            String patientlastName=patientSnapshot.data!.data()!['lastname'];
-                            return Text(
-                              patientName,
-                              style: TextStyle(
-                                fontSize: 24,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            );
-
-                          }
-                        },
-                      ),
-                    ],
-                  ),
+                Image.asset(
+                  'images/account.png', // Chemin vers votre image
+                  height: 170, // Hauteur de l'image
+                  width: 150, // Largeur de l'image, réglée sur la largeur maximale disponible
+                  fit: BoxFit.cover, // Ajustement de l'image pour couvrir le conteneur
                 ),
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: ListView.builder(
-                      itemCount: medicalData.entries.length,
-                      itemBuilder: (context, index) {
-                        return InkWell(
-                          onTap: () {
-                            // Naviguer vers la page correspondante à l'index de la carte
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(builder: (context) => pages[index]),
-                            );
-                          },
-                          child: Card(
-                            elevation: 4, // Élévation de la carte
-                            margin: EdgeInsets.symmetric(vertical: 8.0),
-                            child: ListTile(
-                              leading: _buildIcon(medicalData.entries.elementAt(index).key), // Icône à côté du texte
-                              title: Text(
-                                medicalData.entries.elementAt(index).key,
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.blue, // Couleur du texte en gras
-                                ),
-                              ),
-                              //subtitle: _buildSubtitle(medicalData.entries.elementAt(index).value),
-                            ),
-                          ),
-                        );
-                      },
-                    ),
-                  ),
+                SizedBox(height: 16),
+                StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+                  stream: FirebaseFirestore.instance.collection('patients').doc(uid).snapshots(),
+                  builder: (context, patientSnapshot) {
+                    if (patientSnapshot.connectionState == ConnectionState.waiting) {
+                      return CircularProgressIndicator(); // Indicateur de chargement
+                    } else if (patientSnapshot.hasError) {
+                      return Text('Erreur de chargement du nom du patient');
+                    } else if (!patientSnapshot.hasData || !patientSnapshot.data!.exists) {
+                      return Text('Nom de patient non trouvé');
+                    } else {
+                      String patientName = patientSnapshot.data!.data()!['username'];
+                      String patientlastName=patientSnapshot.data!.data()!['lastname'];
+                      return Text(
+                        patientName,
+                        style: TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      );
+
+                    }
+                  },
                 ),
               ],
-            );
-          }
-        },
+            ),
+          ),
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: ListView.builder(
+                itemCount: categories.length,
+                itemBuilder: (context, index) {
+                  return InkWell(
+                    onTap: () {
+                      // Naviguer vers la page correspondante à l'index de la carte
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => pages[index]),
+                      );
+                    },
+                    child: Card(
+                      elevation: 4, // Élévation de la carte
+                      margin: EdgeInsets.symmetric(vertical: 8.0),
+                      child: ListTile(
+                        leading: _buildIcon(categories[index]), // Icône à côté du texte
+                        title: Text(
+                          categories[index],
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: Colors.blue, // Couleur du texte en gras
+                          ),
+                        ),
+                        //subtitle: _buildSubtitle(medicalData.entries.elementAt(index).value),
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
