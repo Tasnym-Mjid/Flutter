@@ -1,6 +1,8 @@
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:pfa2/DossierMedicalPage.dart';
 import 'package:pfa2/ListMedecin.dart';
 import 'package:pfa2/Randez-vous_Page.dart';
 import 'package:pfa2/main.dart';
@@ -16,6 +18,28 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  String? patientId; // L'ID de l'utilisateur connecté
+
+  @override
+  void initState() {
+    super.initState();
+    // Récupérer l'ID de l'utilisateur connecté lorsque le widget est créé
+    _fetchUserId();
+  }
+
+  Future<void> _fetchUserId() async {
+    try {
+      // Obtenir l'utilisateur actuellement connecté avec Firebase Authentication
+      User? user = FirebaseAuth.instance.currentUser;
+      if (user != null) {
+        setState(() {
+          patientId = user.uid;
+        });
+      }
+    } catch (error) {
+      print('Erreur lors de la récupération de l\'ID de l\'utilisateur : $error');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -73,7 +97,12 @@ class _HomeScreenState extends State<HomeScreen> {
               SizedBox(height: 25,),
               Column(
                 children: [
-                  ElevatedButton(onPressed:(){},
+                  ElevatedButton(onPressed:(){
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(builder: (context) => MedicalRecordPage(),)
+                    );
+                  },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.blue[300],
                       elevation: 8,

@@ -8,8 +8,12 @@ class SignUpScreen extends StatelessWidget {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmPasswordController = TextEditingController();
-  final TextEditingController _roleController = TextEditingController();
+  //final TextEditingController _roleController = TextEditingController();
   final TextEditingController _lastNameController = TextEditingController();
+  final currentUser=FirebaseAuth.instance;
+  final List<String> _roles = ['Patient', 'Médecin'];
+  String _selectedRole = 'Patient';
+
 
 
 
@@ -27,6 +31,8 @@ class SignUpScreen extends StatelessWidget {
         email: _emailController.text,
         password: _passwordController.text,
       );
+      //String userId = userCredential.user!.uid;
+
 
       // Enregistrez d'autres informations de l'utilisateur si nécessaire.
       // Par exemple, vous pouvez enregistrer le nom d'utilisateur dans une base de données Firestore.
@@ -43,7 +49,7 @@ class SignUpScreen extends StatelessWidget {
           duration: Duration(seconds: 2),
         ),
       );
-
+      final String? userId=currentUser.currentUser?.uid;
       // Navigate to the login screen after successful sign up.
       Navigator.pushReplacement(
         context,
@@ -51,8 +57,9 @@ class SignUpScreen extends StatelessWidget {
       );
       addUserDetails(_usernameController.text,
           _lastNameController.text,
-          _roleController.text,
-          _emailController.text);
+          _selectedRole,
+          _emailController.text,
+      userId!,);
       separateUsers();
     } catch (e) {
       // Gérez les erreurs ici, par exemple affichez un message d'erreur à l'utilisateur
@@ -66,11 +73,14 @@ class SignUpScreen extends StatelessWidget {
     }
 
   }
-  addUserDetails(String username,String lastname,String role,String email  )async{
-    await FirebaseFirestore.instance.collection('users').add({
+  addUserDetails(String username,String lastname,String role,String email , String uid )async{
+    User? user = FirebaseAuth.instance.currentUser;
+    String? userId=user?.uid;
+    await FirebaseFirestore.instance.collection('users').doc(userId).set({
+      'uid':uid,
       'username':username,
       'lastname':lastname,
-      'role':role,
+      'role':_selectedRole,
       'email':email,
     });
   }
@@ -82,6 +92,7 @@ class SignUpScreen extends StatelessWidget {
     querySnapshot.docs.forEach((doc) async {
       Map<String, dynamic> userData = doc.data() as Map<String, dynamic>;
       Map<String, dynamic> dataToTransfer = {
+        'uid':userData['uid'],
         'username': userData['username'], // Champs à transférer depuis la collection 'users'
         'lastname': userData['lastname'],
          'role': userData['role'],
@@ -89,13 +100,13 @@ class SignUpScreen extends StatelessWidget {
       };
 
       // Vérifier le type d'utilisateur
-      String userType = userData['role']; // Suppose que vous avez un champ 'userType' pour indiquer le type d'utilisateur
+      //String userType = userData['role']; // Suppose que vous avez un champ 'userType' pour indiquer le type d'utilisateur
 
       // Ajouter l'utilisateur à la collection appropriée
-      if (userType == 'medecin') {
+      if (_selectedRole == 'Médecin') {
         // Ajouter l'utilisateur à la collection des médecins
         await FirebaseFirestore.instance.collection('doctors').doc(doc.id).set(dataToTransfer);
-      } else if (userType == 'patient') {
+      } else if (_selectedRole == 'Patient') {
         // Ajouter l'utilisateur à la collection des patients
         await FirebaseFirestore.instance.collection('patients').doc(doc.id).set(dataToTransfer);
       }
@@ -175,10 +186,19 @@ class SignUpScreen extends StatelessWidget {
                     ),
                   ),
                   SizedBox(height: 20.0),
-                  TextFormField(
-                    controller: _roleController,
+                  DropdownButtonFormField<String>(
+                    value: _selectedRole,
+                    items: _roles.map((role) {
+                      return DropdownMenuItem<String>(
+                        value: role,
+                        child: Text(role),
+                      );
+                    }).toList(),
+                    onChanged: (value) {
+                      _selectedRole = value!;
+                    },
                     decoration: InputDecoration(
-                      labelText: 'Role',
+                      labelText: 'Rôle',
                       prefixIcon: Icon(Icons.add_circle),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10.0),

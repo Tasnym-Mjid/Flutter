@@ -49,7 +49,7 @@ class _ReadListViewState extends State<ReadListView> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => AppointmentScreen(),
+                        builder: (context) => AppointmentScreen(  medecinId: docs[index].id,),
                       ),
                     );
                   } ,
