@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:pfa2/home/PatientScreen.dart'; // Import de la page pour les patients
-import 'package:pfa2/home/MedecinScreen.dart'; // Import de la page pour les médecins
+import 'package:pfa2/home/HomeScreen.dart'; // Import de la page pour les patients
+import 'package:pfa2/medecin/MedecinScreen.dart'; // Import de la page pour les médecins
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);

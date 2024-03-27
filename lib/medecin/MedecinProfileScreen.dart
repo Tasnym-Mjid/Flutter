@@ -1,7 +1,9 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 
 class MedecinProfileScreen extends StatelessWidget {
   @override
@@ -10,8 +12,6 @@ class MedecinProfileScreen extends StatelessWidget {
     final User? user = _auth.currentUser;
 
     if (user == null) {
-      // Si aucun utilisateur n'est connecté, renvoyer à l'écran de connexion
-      // ou afficher un message d'erreur.
       return Scaffold(
         body: Center(
           child: Text('Aucun utilisateur connecté'),
@@ -32,7 +32,6 @@ class MedecinProfileScreen extends StatelessWidget {
         actions: <Widget>[
           IconButton(
             onPressed: () {
-              // Action pour accéder aux réglages du médecin
               Navigator.push(context, MaterialPageRoute(builder: (context) => MedecinSettingsScreen()));
             },
             icon: const Icon(Icons.settings, size: 26),
@@ -68,15 +67,17 @@ class MedecinProfileScreen extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: <Widget>[
                 SizedBox(height: 20),
-                CircleAvatar(
-                  radius: 60,
-                  backgroundImage: medecinData['photoUrl'] != null ? NetworkImage(
-                    medecinData['photoUrl'],
-                  ) : AssetImage('assets/placeholder_image.jpg') as ImageProvider,
-                  backgroundColor: Colors.grey, // Couleur de fond pour le placeholder
-                  child: medecinData['photoUrl'] == null ? Icon(Icons.person, size: 60, color: Colors.white) : null,
+                // Affichage de la photo si elle est disponible
+                medecinData['photoUrl'] != null
+                    ? CircleAvatar(
+                  radius: 50,
+                  backgroundImage: NetworkImage(medecinData['photoUrl']),
+                )
+                    : CircleAvatar(
+                  radius: 50,
+                  child: Icon(Icons.person),
                 ),
-                SizedBox(height: 20),
+                SizedBox(height: 10),
                 Text(
                   "Nom d'utilisateur: ${medecinData['username']}",
                   style: TextStyle(
@@ -146,13 +147,26 @@ class MedecinSettingsScreen extends StatelessWidget {
               onPressed: () async {
                 final pickedFile = await ImagePicker().getImage(source: ImageSource.gallery);
                 if (pickedFile != null) {
-                  // Mettre à jour l'URL de la photo dans Firestore
-                  await FirebaseFirestore.instance.collection('medecins').doc(FirebaseAuth.instance.currentUser!.uid).update({
-                    'photoUrl': pickedFile.path,
-                  });
-                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                    content: Text('Photo ajoutée avec succès !'),
-                  ));
+                  User? currentUser = FirebaseAuth.instance.currentUser;
+                  if (currentUser != null) {
+                    File imageFile = File(pickedFile.path);
+                    // Obtenir le nom de fichier
+                    String fileName = pickedFile.path.split('/').last;
+                    // Télécharger l'image vers Firebase Storage
+                    Reference ref = FirebaseStorage.instance.ref().child('medecin_images/${currentUser.uid}/$fileName');
+                    UploadTask uploadTask = ref.putFile(imageFile);
+                    await uploadTask.whenComplete(() async {
+                      String imageUrl = await ref.getDownloadURL();
+                      // Mettre à jour Firestore avec l'URL de l'image
+                      await FirebaseFirestore.instance.collection('medecins').doc(currentUser.uid).update({
+                        'photoUrl': imageUrl,
+                      });
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                        content: Text('Photo ajoutée avec succès !'),
+                      ));
+                      Navigator.pop(context); // Retour à l'écran précédent pour rafraîchir la page
+                    });
+                  }
                 }
               },
               child: Text("Sélectionner une photo"),
@@ -176,15 +190,16 @@ class MedecinSettingsScreen extends StatelessWidget {
             SizedBox(height: 20),
             ElevatedButton(
               onPressed: () async {
-                // Récupérer la spécialité médicale entrée par l'utilisateur
                 final specialiteMedicale = specialtyController.text;
-                // Mettre à jour la spécialité médicale dans Firestore
-                await FirebaseFirestore.instance.collection('medecins').doc(FirebaseAuth.instance.currentUser!.uid).update({
-                  'specialite': specialiteMedicale,
-                });
-                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                  content: Text('Spécialité ajoutée avec succès !'),
-                ));
+                User? currentUser = FirebaseAuth.instance.currentUser;
+                if (currentUser != null) {
+                  await FirebaseFirestore.instance.collection('medecins').doc(currentUser.uid).update({
+                    'specialite': specialiteMedicale,
+                  });
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                    content: Text('Spécialité ajoutée avec succès !'),
+                  ));
+                }
               },
               child: Text("Enregistrer"),
             ),
@@ -200,3 +215,4 @@ void main() {
     home: MedecinProfileScreen(),
   ));
 }
+
