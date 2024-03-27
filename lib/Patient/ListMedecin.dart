@@ -1,7 +1,7 @@
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter/material.dart';
 
-import 'Firebase/readListView.dart';
+import '../Firebase/readListView.dart';
 
 class ListMedecin extends StatefulWidget {
   @override

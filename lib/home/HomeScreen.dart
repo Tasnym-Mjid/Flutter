@@ -2,9 +2,9 @@ import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:pfa2/DossierMedicalPage.dart';
-import 'package:pfa2/ListMedecin.dart';
-import 'package:pfa2/Randez-vous_Page.dart';
+import 'package:pfa2/Dossier%20medical/DossierMedicalPage.dart';
+import 'package:pfa2/Patient/ListMedecin.dart';
+import 'package:pfa2/Patient/Randez-vous_Page.dart';
 import 'package:pfa2/main.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 

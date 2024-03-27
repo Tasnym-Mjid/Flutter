@@ -3,8 +3,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:pfa2/Dossier%20medical/ConsultationPage.dart';
 import 'package:pfa2/Dossier%20medical/ResultatLaboPage.dart';
-import 'Dossier medical/AllergiePage.dart';
-import 'Dossier medical/AntecedantPage.dart';
+import 'AllergiePage.dart';
+import 'AntecedantPage.dart';
 
 class MedicalRecordPage extends StatefulWidget {
   @override

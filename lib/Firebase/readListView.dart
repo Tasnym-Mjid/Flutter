@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:pfa2/Randez-vous_Page.dart';
+import 'package:pfa2/Patient/Randez-vous_Page.dart';
 
 class ReadListView extends StatefulWidget {
   const ReadListView({super.key});
