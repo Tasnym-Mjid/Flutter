@@ -11,6 +11,7 @@ class MainLayout extends StatefulWidget {
 }
 
 class _MainLayoutState extends State<MainLayout> {
+  late final String userId;
   //variable declaration
   int _pageIndex = 0;
 

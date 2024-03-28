@@ -55,71 +55,78 @@ class _MedicalRecordPageState extends State<MedicalRecordPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Dossier médical'),
-        backgroundColor: Colors.blue, // Couleur de l'app bar
       ),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              //crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Image.asset(
-                  'images/account.png', // Chemin vers votre image
-                  height: 170, // Hauteur de l'image
-                  width: 150, // Largeur de l'image, réglée sur la largeur maximale disponible
-                  fit: BoxFit.cover, // Ajustement de l'image pour couvrir le conteneur
-                ),
-                SizedBox(height: 16),
-                StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
-                  stream: FirebaseFirestore.instance.collection('patients').doc(uid).snapshots(),
-                  builder: (context, patientSnapshot) {
-                    if (patientSnapshot.connectionState == ConnectionState.waiting) {
-                      return CircularProgressIndicator(); // Indicateur de chargement
-                    } else if (patientSnapshot.hasError) {
-                      return Text('Erreur de chargement du nom du patient');
-                    } else if (!patientSnapshot.hasData || !patientSnapshot.data!.exists) {
-                      return Text('Nom de patient non trouvé');
-                    } else {
-                      String patientName = patientSnapshot.data!.data()!['username'];
-                      String patientlastName=patientSnapshot.data!.data()!['lastname'];
-                      return Text(
-                        patientName,
-                        style: TextStyle(
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
+      body: Center(
+        child: Card(
+          margin: EdgeInsets.all(16.0),
+          elevation: 4, // Élévation de la carte
+          color: Colors.blueGrey,
+          child: ListView(
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child:Center(
+                  child: Column(
+                    //crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Container(
+                        width: 150,
+                        height: 150,
+                        decoration: BoxDecoration(
+                          color: Colors.blue, // Couleur bleue pour le fond
+                          shape: BoxShape.circle, // Forme circulaire
                         ),
-                      );
-
-                    }
-                  },
+                        child: CircleAvatar(
+                          radius: 50,
+                          backgroundImage: NetworkImage('https://media.istockphoto.com/id/1090878494/fr/photo/bouchent-portrait-du-jeune-souriant-bel-homme-en-polo-bleu-isol%C3%A9-sur-fond-gris.jpg?s=612x612&w=0&k=20&c=d4gHKQJEydpFppzIO3poAdV5dcyYN3MiTGvP07bBSrY='),
+                        ),
+                      ),
+                      SizedBox(height: 16),
+                      StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+                        stream: FirebaseFirestore.instance.collection('patients').doc(uid).snapshots(),
+                        builder: (context, patientSnapshot) {
+                          if (patientSnapshot.connectionState == ConnectionState.waiting) {
+                            return CircularProgressIndicator(); // Indicateur de chargement
+                          } else if (patientSnapshot.hasError) {
+                            return Text('Erreur de chargement du nom du patient');
+                          } else if (!patientSnapshot.hasData || !patientSnapshot.data!.exists) {
+                            return Text('Nom de patient non trouvé');
+                          } else {
+                            String patientName = patientSnapshot.data!.data()!['username'];
+                            String patientlastName = patientSnapshot.data!.data()!['lastname'];
+                            return Text(
+                              '$patientName $patientlastName',
+                              style: TextStyle(
+                                fontSize: 24,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            );
+                          }
+                        },
+                      ),
+                    ],
+                  ),
                 ),
-              ],
-            ),
-          ),
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: ListView.builder(
-                itemCount: categories.length,
-                itemBuilder: (context, index) {
-                  return InkWell(
+              ),
+              ...categories.map((category) {
+                return Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: InkWell(
                     onTap: () {
                       // Naviguer vers la page correspondante à l'index de la carte
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => pages[index]),
+                        MaterialPageRoute(builder: (context) => pages[categories.indexOf(category)]),
                       );
                     },
                     child: Card(
                       elevation: 4, // Élévation de la carte
                       margin: EdgeInsets.symmetric(vertical: 8.0),
                       child: ListTile(
-                        leading: _buildIcon(categories[index]), // Icône à côté du texte
+                        leading: _buildIcon(category), // Icône à côté du texte
                         title: Text(
-                          categories[index],
+                          category,
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                             color: Colors.blue, // Couleur du texte en gras
@@ -128,12 +135,12 @@ class _MedicalRecordPageState extends State<MedicalRecordPage> {
                         //subtitle: _buildSubtitle(medicalData.entries.elementAt(index).value),
                       ),
                     ),
-                  );
-                },
-              ),
-            ),
+                  ),
+                );
+              }).toList(),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
