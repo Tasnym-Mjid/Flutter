@@ -3,109 +3,160 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:firebase_storage/firebase_storage.dart';
+import 'package:curved_navigation_bar/curved_navigation_bar.dart'; // Importation du package pour la barre de navigation incurvée
 
-class MedecinProfileScreen extends StatelessWidget {
+import 'ReglageMedecin.dart';
+
+class MedecinProfileScreen extends StatefulWidget {
+  @override
+  _ProfileScreenState createState() => _ProfileScreenState();
+}
+
+class _ProfileScreenState extends State<MedecinProfileScreen> {
+  late Stream<DocumentSnapshot> _profileStream;
+  late String _userId;
+
+  @override
+  void initState() {
+    super.initState();
+    // Récupérer l'ID de l'utilisateur connecté
+    _userId = FirebaseAuth.instance.currentUser!.uid;
+    // Utiliser l'ID récupéré pour récupérer les données du patient
+    _profileStream = FirebaseFirestore.instance.collection('medecins').doc(_userId).snapshots();
+  }
+
   @override
   Widget build(BuildContext context) {
-    final FirebaseAuth _auth = FirebaseAuth.instance;
-    final User? user = _auth.currentUser;
-
-    if (user == null) {
-      return Scaffold(
-        body: Center(
-          child: Text('Aucun utilisateur connecté'),
-        ),
-      );
-    }
-
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          "Profil du Médecin",
-          style: TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.w600,
-            color: Colors.blue,
-          ),
-        ),
-        actions: <Widget>[
-          IconButton(
-            onPressed: () {
-              Navigator.push(context, MaterialPageRoute(builder: (context) => MedecinSettingsScreen()));
-            },
-            icon: const Icon(Icons.settings, size: 26),
-            color: Colors.blue,
-          ),
-        ],
+        backgroundColor: Colors.transparent,
+        elevation: 0, // Enlever l'ombre sous l'app bar
       ),
       body: StreamBuilder<DocumentSnapshot>(
-        stream: FirebaseFirestore.instance.collection('medecins').doc(user!.uid).snapshots(),
-        builder: (context, AsyncSnapshot<DocumentSnapshot> snapshot) {
+        stream: _profileStream,
+        builder: (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Center(
               child: CircularProgressIndicator(),
             );
           }
-
           if (snapshot.hasError) {
             return Center(
-              child: Text('Error: ${snapshot.error}'),
+              child: Text('Une erreur est survenue. Veuillez réessayer plus tard.'),
             );
           }
-
           if (!snapshot.hasData || !snapshot.data!.exists) {
             return Center(
-              child: Text('Aucune donnée disponible'),
+              child: Text('Aucune donnée trouvée pour ce médecin.'),
             );
           }
 
-          final medecinData = snapshot.data!;
+          // Accéder aux données du médecin
+          Map<String, dynamic>? medecinData = snapshot.data!.data() as Map<String, dynamic>?;
 
-          return Center(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: <Widget>[
-                SizedBox(height: 20),
-                // Affichage de la photo si elle est disponible
-                medecinData['photoUrl'] != null
-                    ? CircleAvatar(
-                  radius: 50,
-                  backgroundImage: NetworkImage(medecinData['photoUrl']),
-                )
-                    : CircleAvatar(
-                  radius: 50,
-                  child: Icon(Icons.person),
-                ),
-                SizedBox(height: 10),
-                Text(
-                  "Nom d'utilisateur: ${medecinData['username']}",
-                  style: TextStyle(
-                    fontSize: 16,
+          // Vérifier si medecinData est null
+          if (medecinData == null) {
+            return Center(
+              child: Text('Aucune donnée trouvée pour ce médecin.'),
+            );
+          }
+
+          return Scaffold(
+            appBar: AppBar(
+              backgroundColor: Colors.transparent,
+              elevation: 0,
+            ),
+            body: Card(
+              color: Colors.blue[300],
+              margin: EdgeInsets.all(20.0),
+              elevation: 5, // Ajout d'une ombre pour le card
+              child: SingleChildScrollView(
+                padding: EdgeInsets.all(20.0),
+                child: Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Container(
+                        width: 150,
+                        height: 150,
+                        decoration: BoxDecoration(
+                          color: Colors.blue, // Couleur bleue pour le fond
+                          shape: BoxShape.circle, // Forme circulaire
+                        ),
+                        child: CircleAvatar(
+                          radius: 50,
+                          backgroundImage: NetworkImage('https://thumbs.dreamstime.com/z/cute-little-female-doctor-cartoon-waving-hand-illustration-33233171.jpg'),
+                        ),
+                      ),
+                      SizedBox(height: 20),
+                      Text(
+                        'Nom: ${medecinData['username'] ?? 'N/A'}',
+                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
+                      ),
+                      SizedBox(height: 10),
+                      Text(
+                        'Prénom: ${medecinData['lastname'] ?? 'N/A'}',
+                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
+                      ),
+                      SizedBox(height: 10),
+                      Text(
+                        'Spécialité: ${medecinData['specialite'] ?? 'N/A'}',
+                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
+                      ),
+                      SizedBox(height: 10),
+                      Text(
+                        'Localisation: ${medecinData['localisation'] ?? 'N/A'}', // Affichage de la localisation
+                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
+                      ),
+                      SizedBox(height: 20),
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.white, // Fond bleu pour le bouton
+                          padding: EdgeInsets.all(15),
+                          elevation: 5,
+                        ),
+                        onPressed: () {
+                          Navigator.push(context, MaterialPageRoute(builder: (context) => ReglageMedecin())); // Naviguer vers la page de réglages du médecin
+                        },
+                        child: Icon(
+                          Icons.edit,
+                          color: Colors.blue,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-                SizedBox(height: 5),
-                Text(
-                  "Nom de famille: ${medecinData['lastname']}",
-                  style: TextStyle(
-                    fontSize: 16,
-                  ),
-                ),
-                SizedBox(height: 5),
-                Text(
-                  "E-mail: ${medecinData['email']}",
-                  style: TextStyle(
-                    fontSize: 16,
-                  ),
-                ),
-                SizedBox(height: 5),
-                Text(
-                  "Spécialité: ${medecinData['specialite'] ?? 'Non spécifié'}",
-                  style: TextStyle(
-                    fontSize: 16,
-                  ),
-                ),
+              ),
+            ),
+            bottomNavigationBar: CurvedNavigationBar( // Ajout de la CurvedNavigationBar
+              backgroundColor: Colors.transparent,
+              buttonBackgroundColor: Colors.blue,
+              color: Colors.blue,
+              animationDuration: const Duration(milliseconds: 300),
+              items: const <Widget>[
+                Icon(Icons.home, size: 26, color: Colors.white),
+                Icon(Icons.account_circle_outlined, size: 26, color: Colors.white),
+                Icon(Icons.add_alert, size: 26, color: Colors.white),
               ],
+              onTap: (index) {
+                // Actions à effectuer lors de la navigation entre les onglets
+                switch (index) {
+                  case 0:
+                  // Action pour l'onglet Accueil
+                    break;
+                  case 1:
+                  // Naviguer vers l'écran du profil du médecin
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => ReglageMedecin()),
+                    );
+                    break;
+                  case 2:
+                  // Action pour l'onglet Notifications
+                    break;
+                  default:
+                }
+              },
             ),
           );
         },
@@ -113,106 +164,3 @@ class MedecinProfileScreen extends StatelessWidget {
     );
   }
 }
-
-class MedecinSettingsScreen extends StatelessWidget {
-  final TextEditingController specialtyController = TextEditingController();
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          "Paramètres",
-          style: TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.w600,
-            color: Colors.blue,
-          ),
-        ),
-      ),
-      body: Padding(
-        padding: EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            Text(
-              "Ajouter une photo",
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            SizedBox(height: 10),
-            ElevatedButton(
-              onPressed: () async {
-                final pickedFile = await ImagePicker().getImage(source: ImageSource.gallery);
-                if (pickedFile != null) {
-                  User? currentUser = FirebaseAuth.instance.currentUser;
-                  if (currentUser != null) {
-                    File imageFile = File(pickedFile.path);
-                    // Obtenir le nom de fichier
-                    String fileName = pickedFile.path.split('/').last;
-                    // Télécharger l'image vers Firebase Storage
-                    Reference ref = FirebaseStorage.instance.ref().child('medecin_images/${currentUser.uid}/$fileName');
-                    UploadTask uploadTask = ref.putFile(imageFile);
-                    await uploadTask.whenComplete(() async {
-                      String imageUrl = await ref.getDownloadURL();
-                      // Mettre à jour Firestore avec l'URL de l'image
-                      await FirebaseFirestore.instance.collection('medecins').doc(currentUser.uid).update({
-                        'photoUrl': imageUrl,
-                      });
-                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                        content: Text('Photo ajoutée avec succès !'),
-                      ));
-                      Navigator.pop(context); // Retour à l'écran précédent pour rafraîchir la page
-                    });
-                  }
-                }
-              },
-              child: Text("Sélectionner une photo"),
-            ),
-            SizedBox(height: 20),
-            Text(
-              "Spécialité médicale",
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            SizedBox(height: 10),
-            TextField(
-              controller: specialtyController,
-              decoration: InputDecoration(
-                hintText: "Entrez votre spécialité médicale",
-                border: OutlineInputBorder(),
-              ),
-            ),
-            SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () async {
-                final specialiteMedicale = specialtyController.text;
-                User? currentUser = FirebaseAuth.instance.currentUser;
-                if (currentUser != null) {
-                  await FirebaseFirestore.instance.collection('medecins').doc(currentUser.uid).update({
-                    'specialite': specialiteMedicale,
-                  });
-                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                    content: Text('Spécialité ajoutée avec succès !'),
-                  ));
-                }
-              },
-              child: Text("Enregistrer"),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-void main() {
-  runApp(MaterialApp(
-    home: MedecinProfileScreen(),
-  ));
-}
-

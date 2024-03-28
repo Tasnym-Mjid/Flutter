@@ -1,7 +1,7 @@
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter/material.dart';
-import 'package:pfa2/Patient/ProfilPatient.dart';
-import 'package:pfa2/home/HomeScreen.dart';
+import '../Patient/ProfilePatient.dart';
+import 'HomeScreen.dart';
 
 class MainLayout extends StatefulWidget {
   const MainLayout({Key? key}) : super(key: key);

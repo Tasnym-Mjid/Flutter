@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'PatientsListScreen.dart'; // Importez l'écran de liste des patients ici
 import 'MedecinProfileScreen.dart'; // Importez l'écran du profil du médecin ici
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'AgendaMedecin.dart';
 
 class MedecinScreen extends StatelessWidget {
   @override
@@ -54,8 +56,35 @@ class MedecinScreen extends StatelessWidget {
             MaterialButton(
               minWidth: double.infinity,
               height: 60,
-              onPressed: () {
-                // Action à effectuer lors du clic sur le bouton
+              onPressed: () async {
+                // Récupérer l'ID du médecin
+                String? medecinId = FirebaseAuth.instance.currentUser?.uid;
+
+                // Vérifier si l'ID du médecin est récupéré
+                if (medecinId != null) {
+                  // Naviguer vers la page de l'agenda en passant l'ID du médecin en paramètre
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => AgendaMedecin(medecinId: medecinId)),
+                  );
+                } else {
+                  // Afficher une alerte ou effectuer une autre action si l'ID du médecin n'est pas récupéré
+                  showDialog(
+                    context: context,
+                    builder: (context) => AlertDialog(
+                      title: Text('Erreur'),
+                      content: Text('Impossible de récupérer l\'ID du médecin.'),
+                      actions: [
+                        TextButton(
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                          child: Text('OK'),
+                        ),
+                      ],
+                    ),
+                  );
+                }
               },
               color: Color(0xff0095FF),
               elevation: 0,

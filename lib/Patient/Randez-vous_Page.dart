@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class AppointmentScreen extends StatefulWidget {
-  const AppointmentScreen({Key? key});
+  final String medecinId;
+
+  const AppointmentScreen({Key? key,  required this.medecinId});
 
   @override
   State<AppointmentScreen> createState() => _AppointmentScreenState();
@@ -66,7 +68,7 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
     }
   }
 
-  Future<void> _saveAppointment() async {
+  Future<void> _saveAppointment(String medecinId) async {
     try {
       // Vérifiez d'abord si tous les champs sont remplis
       if (selectedDate == null ||
@@ -153,7 +155,8 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
         'nomPatient': _nameController.text,
         'numeroTelephone': _phoneNumberController.text,
         'date': selectedDate,
-        'heure': '${selectedTime!.hour}:${selectedTime!.minute}', // Convertir en chaîne
+        'heure': '${selectedTime!.hour}:${selectedTime!.minute}',
+        'medecinId': medecinId,// Convertir en chaîne
       });
       setState(() {
         selectedDate = null;
@@ -307,7 +310,7 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
               ),
               SizedBox(height: 20,),
               ElevatedButton(
-                onPressed: _saveAppointment,
+                onPressed: (){_saveAppointment(widget.medecinId);},
                 child: Text(
                   'Réserver',
                   style: TextStyle(

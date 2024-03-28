@@ -1,15 +1,16 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-class AllergieInfos extends StatefulWidget {
-  const AllergieInfos({super.key});
+
+class MedicalHistoryInfos extends StatefulWidget {
+  const MedicalHistoryInfos({Key? key}) : super(key: key);
 
   @override
-  State<AllergieInfos> createState() => _AllergieInfosState();
+  State<MedicalHistoryInfos> createState() => _MedicalHistoryInfosState();
 }
 
-class _AllergieInfosState extends State<AllergieInfos> {
-  late Stream<QuerySnapshot> _AllergieStream;
+class _MedicalHistoryInfosState extends State<MedicalHistoryInfos> {
+  late Stream<QuerySnapshot> _AntStream;
   late String userId;
 
   Future<void> _fetchUid() async {
@@ -31,13 +32,13 @@ class _AllergieInfosState extends State<AllergieInfos> {
     super.initState();
     _fetchUid();
     // Créer un Stream qui écoute les modifications des documents avec un champ 'id' égal à userId
-    _AllergieStream = FirebaseFirestore.instance.collection('Allergies').where('patientId', isEqualTo: userId).snapshots();
+    _AntStream = FirebaseFirestore.instance.collection('Antécédents').where('patientId', isEqualTo: userId).snapshots();
   }
 
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<QuerySnapshot>(
-      stream: _AllergieStream,
+      stream: _AntStream,
       builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
         if (snapshot.hasError) {
           return Text('Something went wrong');
@@ -57,11 +58,10 @@ class _AllergieInfosState extends State<AllergieInfos> {
         return ListView.builder(
           itemCount: documents.length,
           itemBuilder: (BuildContext context, int index) {
-            Map<String, dynamic> AllergieData = documents[index].data()! as Map<String, dynamic>;
+            Map<String, dynamic> AntData = documents[index].data()! as Map<String, dynamic>;
             return LabResultCard(
-              allergen: AllergieData['allergen'] ?? '',
-              severity: AllergieData['severity'] ?? '',
-              description: AllergieData['description'] ?? '',
+              title: AntData['title'] ?? '',
+              description: AntData['description'] ?? '',
             );
           },
         );
@@ -70,14 +70,12 @@ class _AllergieInfosState extends State<AllergieInfos> {
   }
 }
 class LabResultCard extends StatelessWidget {
-  final String allergen;
-  final String severity;
+  final String title;
   final String description;
   //final VoidCallback onViewDetails; // Changement de nom pour rendre son utilisation plus claire
 
   LabResultCard({
-    required this.allergen,
-    required this.severity,
+    required this.title,
     required this.description,
     //required this.onViewDetails,
   });
@@ -90,13 +88,13 @@ class LabResultCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           ListTile(
-            title: Text('Allergène : $allergen',
+            title: Text(
+              title,
               style: TextStyle(fontWeight: FontWeight.bold),
             ),
             subtitle: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('Sévérité: $severity'),
                 Text('Description: $description'),
               ],
             ),

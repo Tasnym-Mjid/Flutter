@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
-
+import '../Dossier medical/DossierMedicalPage.dart';
 
 class PatientsListScreen extends StatefulWidget {
   @override
@@ -76,23 +76,25 @@ class _PatientsListScreenState extends State<PatientsListScreen> {
                   itemBuilder: (context, index) {
                     return Card(
                       child: ListTile(
-                        title: Text(patients[index]['username']),
+                        leading: Icon(Icons.person),
+                        title: Text(
+                          patients[index]['username'],
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
                         subtitle: Text(patients[index]['lastname']),
-                        trailing: ElevatedButton(
+                        trailing: IconButton(
                           onPressed: () {
-                            // Naviguer vers le dossier du patient
+                            // Récupérer l'ID du patient
+                            String patientId = patients[index].id;
+
+                            // Naviguer vers la page du dossier médical avec l'ID du patient
                             Navigator.push(
                               context,
-                              MaterialPageRoute(builder: (context) => PatientFileScreen(patient: patients[index])),
+                              MaterialPageRoute(builder: (context) => MedicalRecordPage(patientId: patientId)),
                             );
                           },
-                          style: ButtonStyle(
-                            backgroundColor: MaterialStateProperty.all<Color>(Colors.blue),
-                          ),
-                          child: Text(
-                            'Consulter dossier médical',
-                            style: TextStyle(color: Colors.white),
-                          ),
+                          icon: Icon(Icons.description),
+                          color: Colors.blue,
                         ),
                       ),
                     );
@@ -128,24 +130,6 @@ class _PatientsListScreenState extends State<PatientsListScreen> {
             default:
           }
         },
-      ),
-    );
-  }
-}
-
-class PatientFileScreen extends StatelessWidget {
-  final DocumentSnapshot patient;
-
-  const PatientFileScreen({Key? key, required this.patient}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text("Dossier de ${patient['username']}"),
-      ),
-      body: Center(
-        child: Text("Contenu du dossier médical du patient"),
       ),
     );
   }
