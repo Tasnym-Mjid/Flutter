@@ -7,6 +7,9 @@ import 'AllergiePage.dart';
 import 'AntecedantPage.dart';
 
 class MedicalRecordPage extends StatefulWidget {
+  final String patientId;
+
+  const MedicalRecordPage({Key? key, required this.patientId}) : super(key: key);
   @override
   _MedicalRecordPageState createState() => _MedicalRecordPageState();
 }
@@ -79,7 +82,7 @@ class _MedicalRecordPageState extends State<MedicalRecordPage> {
                         ),
                         child: CircleAvatar(
                           radius: 50,
-                          backgroundImage: NetworkImage('https://media.istockphoto.com/id/1090878494/fr/photo/bouchent-portrait-du-jeune-souriant-bel-homme-en-polo-bleu-isol%C3%A9-sur-fond-gris.jpg?s=612x612&w=0&k=20&c=d4gHKQJEydpFppzIO3poAdV5dcyYN3MiTGvP07bBSrY='),
+                          backgroundImage: NetworkImage('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS6BFtKCAZYI3irqwULvjY5drUF4IJz07Tiyw&usqp=CAU'),
                         ),
                       ),
                       SizedBox(height: 16),

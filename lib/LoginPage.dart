@@ -1,9 +1,12 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:pfa2/home/HomeScreen.dart';
 import 'package:pfa2/home/Main_layout.dart';
 import 'package:pfa2/main.dart';
+
+import 'medecin/MedecinScreen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -24,11 +27,27 @@ class _LoginScreenState extends State<LoginScreen> {
         password: _passwordController.text,
       );
 
-      // Si la connexion réussit, naviguez vers la page d'accueil
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => const MainLayout()),
-      );
+      DocumentSnapshot<Map<String, dynamic>> userDoc = await FirebaseFirestore.instance.collection('users').doc(userCredential.user?.uid).get();
+      String role = userDoc.get('role');
+
+      // Redirection en fonction du rôle de l'utilisateur
+      if (role == 'Patient') {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => MainLayout()), // Page pour les patients
+        );
+      } else if (role == 'Médecin') {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => MedecinScreen()), // Page pour les médecins
+        );
+      } else {
+        // Redirection par défaut vers la page d'accueil générale
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => MainLayout()), // Page d'accueil générale
+        );
+      }
     } catch (e) {
       // Gérez les erreurs ici, par exemple affichez un message d'erreur à l'utilisateur
       print("Erreur de connexion : $e");

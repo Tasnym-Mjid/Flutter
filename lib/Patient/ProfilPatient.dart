@@ -3,8 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:pfa2/Dossier%20medical/DossierMedicalPage.dart';
 
-class ProfileScreen extends StatefulWidget {
+import 'ModifierProfil.dart';
 
+class ProfileScreen extends StatefulWidget {
   @override
   _ProfileScreenState createState() => _ProfileScreenState();
 }
@@ -27,7 +28,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.transparent,
-        elevation: 0, // Enlever l'ombre sous l'app bar
+        elevation: 0,
+        title: Text('Profile',
+        style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),)
       ),
       body: StreamBuilder<DocumentSnapshot>(
         stream: _profileStream,
@@ -58,85 +61,139 @@ class _ProfileScreenState extends State<ProfileScreen> {
             );
           }
 
-          return Card(
-            color: Colors.blue[300],
-            margin: EdgeInsets.all(20.0),
-            elevation: 5, // Ajout d'une ombre pour le card
-            child: SingleChildScrollView(
-              padding: EdgeInsets.all(20.0),
-              child: Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Container(
-                      width: 150,
-                      height: 150,
-                      decoration: BoxDecoration(
-                        color: Colors.blue, // Couleur bleue pour le fond
-                        shape: BoxShape.circle, // Forme circulaire
+          return SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const SizedBox(height: 20),
+                  Stack(
+                    children: [
+                      Container(
+                        width:150, // Largeur maximale
+                        height:150, // Hauteur maximale
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.grey.withOpacity(0.5),
+                              spreadRadius: 2,
+                              blurRadius: 5,
+                              offset: Offset(0, 3),
+                            ),
+                          ],
+                        ),
                       ),
-                      child: CircleAvatar(
-                        radius: 50,
-                        backgroundImage: NetworkImage( 'https://media.istockphoto.com/id/1090878494/fr/photo/bouchent-portrait-du-jeune-souriant-bel-homme-en-polo-bleu-isol%C3%A9-sur-fond-gris.jpg?s=612x612&w=0&k=20&c=d4gHKQJEydpFppzIO3poAdV5dcyYN3MiTGvP07bBSrY='),
+                      CircleAvatar(
+                        radius: 70,
+                        backgroundImage: NetworkImage('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS6BFtKCAZYI3irqwULvjY5drUF4IJz07Tiyw&usqp=CAU'),
                       ),
-                    ),
-                    SizedBox(height: 20),
-                    Text(
-                      'Nom: ${patientData['username'] ?? 'N/A'}',
-                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold,
-                      color: Colors.white),
-                    ),
-                    SizedBox(height: 10),
-                    Text(
-                      'Prénom: ${patientData['lastname'] ?? 'N/A'}',
-                      style: TextStyle(fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white),
-                    ),
-                    SizedBox(height: 20),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.white, // Fond bleu pour le bouton
-                            padding: EdgeInsets.all(15),
-                            elevation: 5,
+                      Positioned(
+                        bottom: 0,
+                        right: 10,
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            shape: BoxShape.circle,
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.blue.withOpacity(0.5),
+                                spreadRadius: 2,
+                                blurRadius: 5,
+                                offset: Offset(0, 3),
+                              ),
+                            ],
                           ),
-                          onPressed: () {
-                            // Action à effectuer lorsqu'on appuie sur le bouton
-                          },
-                          child: Icon(
-                            Icons.edit,
-                            color: Colors.blue,
+                          child: IconButton(
+                            onPressed: (){
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: (context) => EditPatientInfoScreen(userId: _userId)),
+                              );
+                            },
+                            icon: Icon(
+                              Icons.edit,
+                              size: 30,
+                              color: Colors.blue,
+                            ),
                           ),
                         ),
-                        SizedBox(width: 20), // Ajout d'un espace entre les boutons
-                        ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.white, // Fond bleu pour le bouton
-                            padding: EdgeInsets.all(15),
-                            elevation: 5,
+                      ),
+                      Positioned(
+                        bottom: 0,
+                        left: 10,
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            shape: BoxShape.circle,
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.blue.withOpacity(0.5),
+                                spreadRadius: 2,
+                                blurRadius: 5,
+                                offset: Offset(0, 3),
+                              ),
+                            ],
                           ),
-                          onPressed: () {
-                            Navigator.pushReplacement(
+                          child: IconButton(
+                            onPressed: (){
+                              Navigator.push(
                                 context,
-                                MaterialPageRoute(builder: (context) => MedicalRecordPage(),)
-                            );
-                          },
-                          child: Icon(
-                            Icons.folder_rounded,
-                            color: Colors.blue,
+                                MaterialPageRoute(builder: (context) => MedicalRecordPage(patientId: _userId)),
+                              );
+                            },
+                            icon: Icon(
+                              Icons.folder_rounded,
+                              size: 30,
+                              color: Colors.blue,
+                            ),
                           ),
-                        )
-                      ],
-                    ),
-                  ],
-                ),
+                        ),)
+                    ],
+                  ),
+                  const SizedBox(height: 20),
+                  itemProfile('Nom', patientData['username'] ?? 'N/A', Icons.person),
+                  const SizedBox(height: 10),
+                  itemProfile('Prénom', patientData['lastname'] ?? 'N/A', Icons.person),
+                  const SizedBox(height: 10),
+                  itemProfile('Âge', patientData['age'] != null ? patientData['age'].toString() : 'N/A', Icons.timelapse_outlined),
+                  const SizedBox(height: 10),
+                  itemProfile('Numéro de téléphone', patientData['phoneNumber'] ?? 'N/A', Icons.phone),
+                  const SizedBox(height: 10),
+                  itemProfile('Adresse', patientData['address'] ?? 'N/A', Icons.location_on),
+                  const SizedBox(height: 10),
+                  itemProfile('Email', patientData['email'] ?? 'N/A', Icons.mail),
+                  const SizedBox(height: 20,),
+                ],
               ),
             ),
           );
         },
+      ),
+    );
+  }
+
+  Widget itemProfile(String title, String subtitle, IconData iconData) {
+    return Container(
+      decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(10),
+          boxShadow: [
+            BoxShadow(
+                offset: Offset(0, 5),
+                color: Colors.blue.withOpacity(.4),
+                spreadRadius: 2,
+                blurRadius: 10
+            )
+          ]
+      ),
+      child: ListTile(
+        title: Text(title),
+        subtitle: Text(subtitle),
+        leading: Icon(iconData),
+        trailing: Icon(Icons.arrow_forward, color: Colors.grey.shade400),
+        tileColor: Colors.white,
       ),
     );
   }

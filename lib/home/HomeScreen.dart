@@ -100,7 +100,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ElevatedButton(onPressed:(){
                     Navigator.pushReplacement(
                       context,
-                      MaterialPageRoute(builder: (context) => MedicalRecordPage(),)
+                      MaterialPageRoute(builder: (context) => MedicalRecordPage(patientId: patientId!,),)
                     );
                   },
                     style: ElevatedButton.styleFrom(

@@ -47,6 +47,8 @@ dependencies:
   rating_dialog: ^2.0.4
   shared_preferences: ^2.0.15
   provider: ^6.0.4
+  image_picker: ^1.0.7
+  firebase_storage: ^11.6.11
 
 dev_dependencies:
   flutter_test:
