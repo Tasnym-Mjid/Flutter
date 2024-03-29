@@ -113,7 +113,6 @@ class _PatientsListScreenState extends State<PatientsListScreen> {
         items: const <Widget>[
           Icon(Icons.home, size: 26, color: Colors.white),
           Icon(Icons.account_circle_outlined, size: 26, color: Colors.white),
-          Icon(Icons.add_alert, size: 26, color: Colors.white),
         ],
         onTap: (index) {
           // Actions à effectuer lors de la navigation entre les onglets
@@ -124,10 +123,7 @@ class _PatientsListScreenState extends State<PatientsListScreen> {
             case 1:
             // Action pour l'onglet Notifications
               break;
-            case 2:
-            // Action pour l'onglet Profil
-              break;
-            default:
+
           }
         },
       ),

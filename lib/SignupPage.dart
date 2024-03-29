@@ -86,34 +86,28 @@ class SignUpScreen extends StatelessWidget {
   }
 
   void separateUsers() async {
-    // Récupérer tous les documents de la collection 'users'
     QuerySnapshot querySnapshot = await FirebaseFirestore.instance.collection('users').get();
 
     querySnapshot.docs.forEach((doc) async {
       Map<String, dynamic> userData = doc.data() as Map<String, dynamic>;
       Map<String, dynamic> dataToTransfer = {
-        'uid':userData['uid'],
-        'username': userData['username'], // Champs à transférer depuis la collection 'users'
+        'uid': userData['uid'],
+        'username': userData['username'],
         'lastname': userData['lastname'],
         'role': userData['role'],
-        // Ajoutez d'autres champs selon vos besoins
+        'email': userData['email'],
       };
 
-      // Vérifier le type d'utilisateur
-      //String userType = userData['role']; // Suppose que vous avez un champ 'userType' pour indiquer le type d'utilisateur
-
-      // Ajouter l'utilisateur à la collection appropriée
-      if (_selectedRole == 'Médecin') {
-        // Ajouter l'utilisateur à la collection des médecins
-        await FirebaseFirestore.instance.collection('doctors').doc(doc.id).set(dataToTransfer);
-      } else if (_selectedRole == 'Patient') {
-        // Ajouter l'utilisateur à la collection des patients
+      if (userData['role'] == 'Médecin') {
+        await FirebaseFirestore.instance.collection('medecins').doc(doc.id).set(dataToTransfer);
+      } else if (userData['role'] == 'Patient') {
         await FirebaseFirestore.instance.collection('patients').doc(doc.id).set(dataToTransfer);
       }
     });
 
     print('Séparation des utilisateurs terminée.');
   }
+
 
 
   @override

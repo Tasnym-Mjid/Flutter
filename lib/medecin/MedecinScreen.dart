@@ -156,7 +156,6 @@ class MedecinScreen extends StatelessWidget {
         items: const <Widget>[
           Icon(Icons.home, size: 26, color: Colors.white),
           Icon(Icons.account_circle_outlined, size: 26, color: Colors.white),
-          Icon(Icons.add_alert, size: 26, color: Colors.white),
         ],
         onTap: (index) {
           // Actions à effectuer lors de la navigation entre les onglets
@@ -171,10 +170,7 @@ class MedecinScreen extends StatelessWidget {
                 MaterialPageRoute(builder: (context) => MedecinProfileScreen()),
               );
               break;
-            case 2:
-            // Action pour l'onglet Notifications
-              break;
-            default:
+
           }
         },
       ),
