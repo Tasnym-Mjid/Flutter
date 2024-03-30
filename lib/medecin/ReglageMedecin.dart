@@ -1,119 +1,230 @@
-import 'dart:io';
+import 'dart:convert';
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 
 import '../pickImage.dart';
 
-class ReglageMedecin extends StatelessWidget {
-  final TextEditingController specialtyController = TextEditingController();
-  final TextEditingController locationController = TextEditingController(); // Contrôleur pour la localisation
+class ReglageMedecin extends StatefulWidget {
+  final String userId;
+
+  ReglageMedecin({required this.userId});
+
+  @override
+  _ReglageMedecinState createState() => _ReglageMedecinState();
+}
+
+class _ReglageMedecinState extends State<ReglageMedecin> {
+  late TextEditingController _usernameController;
+  late TextEditingController _lastnameController;
+  late TextEditingController _addressController;
+  late TextEditingController _phoneNumberController;
+  late TextEditingController _disponibiliteController;
+
+  Uint8List? _image;
+
+  void selectImage() async {
+    Uint8List img = await pickImage(ImageSource.gallery);
+    setState(() {
+      _image = img;
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _usernameController = TextEditingController();
+    _lastnameController = TextEditingController();
+    _addressController = TextEditingController();
+    _phoneNumberController = TextEditingController();
+    _disponibiliteController = TextEditingController();
+
+    FirebaseFirestore.instance
+        .collection('medecins')
+        .doc(widget.userId)
+        .get()
+        .then((DocumentSnapshot<Map<String, dynamic>> snapshot) {
+      if (snapshot.exists) {
+        Map<String, dynamic>? data = snapshot.data();
+        if (data != null) {
+          setState(() {
+            _usernameController.text = data['username'] ?? '';
+            _lastnameController.text = data['lastname'] ?? '';
+            _phoneNumberController.text = data['phoneNumber'] ?? '';
+            _addressController.text = data['address'] ?? '';
+            _disponibiliteController.text =
+            data['disponibilite'] != null ? data['disponibilite'].toString() : '';
+          });
+        }
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _usernameController.dispose();
+    _lastnameController.dispose();
+    _phoneNumberController.dispose();
+    _addressController.dispose();
+    _disponibiliteController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          "Paramètres",
-          style: TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.w600,
-            color: Colors.blue,
-          ),
-        ),
+        title: Text('Modifier les informations'),
       ),
-      body: Padding(
-        padding: EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            Text(
-              "Ajouter une photo",
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
+      body: SingleChildScrollView(
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                width: 150,
+                height: 150,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  shape: BoxShape.circle,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.grey.withOpacity(0.5),
+                      spreadRadius: 5,
+                      blurRadius: 7,
+                      offset: Offset(0, 3),
+                    ),
+                  ],
+                ),
+                child: Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    _image != null
+                        ? CircleAvatar(
+                      radius: 80,
+                      backgroundImage: MemoryImage(_image!),
+                    )
+                        : CircleAvatar(
+                      radius: 80,
+                      backgroundImage: NetworkImage(
+                          'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS6BFtKCAZYI3irqwULvjY5drUF4IJz07Tiyw&usqp=CAU'),
+                    ),
+                    Positioned(
+                      bottom: -6,
+                      right: 10,
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          shape: BoxShape.circle,
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.grey.withOpacity(0.5),
+                              spreadRadius: 2,
+                              blurRadius: 5,
+                              offset: Offset(0, 3),
+                            ),
+                          ],
+                        ),
+                        child: IconButton(
+                          onPressed: selectImage,
+                          icon: Icon(
+                            Icons.camera_alt,
+                            size: 30,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            ),
-            SizedBox(height: 10),
-            ElevatedButton(
-              onPressed: () async {
-                final pickedFile = await pickImage(ImageSource.gallery);
-                if (pickedFile != null) {
-                  User? currentUser = FirebaseAuth.instance.currentUser;
-                  if (currentUser != null) {
-                    File imageFile = File(pickedFile.path);
-                    // Télécharger l'image vers Firebase Storage
-                    Reference ref = FirebaseStorage.instance.ref().child('medecin_images/${currentUser.uid}/profile_image.jpg');
-                    UploadTask uploadTask = ref.putFile(imageFile);
-                    await uploadTask.whenComplete(() async {
-                      String imageUrl = await ref.getDownloadURL();
-                      // Mettre à jour Firestore avec l'URL de l'image
-                      await FirebaseFirestore.instance.collection('medecins').doc(currentUser.uid).update({
-                        'photoUrl': imageUrl,
-                      });
-                      // Afficher un message de succès
-                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                        content: Text('Photo ajoutée avec succès !'),
-                      ));
-                    });
-                  }
-                }
-              },
-              child: Text("Sélectionner une photo"),
-            ),
-            SizedBox(height: 20),
-            Text(
-              "Spécialité médicale",
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
+              Padding(
+                padding: EdgeInsets.all(20.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    TextField(
+                      controller: _usernameController,
+                      decoration: InputDecoration(
+                        labelText: 'Nom',
+                        border: OutlineInputBorder(),
+                        filled: true,
+                        fillColor: Colors.white,
+                      ),
+                    ),
+                    SizedBox(height: 10),
+                    TextField(
+                      controller: _lastnameController,
+                      decoration: InputDecoration(
+                        labelText: 'Prénom',
+                        border: OutlineInputBorder(),
+                        filled: true,
+                        fillColor: Colors.white,
+                      ),
+                    ),
+                    SizedBox(height: 10),
+                    TextField(
+                      controller: _addressController,
+                      decoration: InputDecoration(
+                        labelText: 'Adresse',
+                        border: OutlineInputBorder(),
+                        filled: true,
+                        fillColor: Colors.white,
+                      ),
+                    ),
+                    SizedBox(height: 10),
+                    TextField(
+                      controller: _phoneNumberController,
+                      decoration: InputDecoration(
+                        labelText: 'Numéro de téléphone',
+                        border: OutlineInputBorder(),
+                        filled: true,
+                        fillColor: Colors.white,
+                      ),
+                    ),
+                    SizedBox(height: 10),
+                    TextField(
+                      controller: _disponibiliteController,
+                      decoration: InputDecoration(
+                        labelText: 'Disponibilité en cas d\'urgence',
+                        border: OutlineInputBorder(),
+                        filled: true,
+                        fillColor: Colors.white,
+                      ),
+                    ),
+                    SizedBox(height: 20),
+                    ElevatedButton(
+                      onPressed: () {
+                        FirebaseFirestore.instance.collection('doctors').doc(widget.userId).update({
+                          'username': _usernameController.text,
+                          'lastname': _lastnameController.text,
+                          'address': _addressController.text,
+                          'phoneNumber': _phoneNumberController.text,
+                          'disponibilite': _disponibiliteController.text.toLowerCase() == 'true',
+                        }).then((_) {
+                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                            content: Text('Informations mises à jour avec succès'),
+                            backgroundColor: Colors.green,
+                          ));
+                        }).catchError((error) {
+                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                            content: Text('Erreur lors de la mise à jour des informations'),
+                            backgroundColor: Colors.red,
+                          ));
+                        });
+                      },
+                      child: Text(
+                        'Enregistrer',
+                        style: TextStyle(color: Colors.black),
+                      ),
+                      style: ElevatedButton.styleFrom(backgroundColor: Colors.blue),
+                    ),
+                  ],
+                ),
               ),
-            ),
-            SizedBox(height: 10),
-            TextField(
-              controller: specialtyController,
-              decoration: InputDecoration(
-                hintText: "Entrez votre spécialité médicale",
-                border: OutlineInputBorder(),
-              ),
-            ),
-            SizedBox(height: 20),
-            Text(
-              "Localisation",
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            SizedBox(height: 10),
-            TextField(
-              controller: locationController,
-              decoration: InputDecoration(
-                hintText: "Entrez votre localisation",
-                border: OutlineInputBorder(),
-              ),
-            ),
-            SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () async {
-                final specialiteMedicale = specialtyController.text;
-                final localisation = locationController.text; // Récupérer la localisation saisie
-                User? currentUser = FirebaseAuth.instance.currentUser;
-                if (currentUser != null) {
-                  await FirebaseFirestore.instance.collection('medecins').doc(currentUser.uid).update({
-                    'specialite': specialiteMedicale,
-                    'localisation': localisation, // Enregistrer la localisation dans Firestore
-                  });
-                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                    content: Text('Spécialité et localisation ajoutées avec succès !'),
-                  ));
-                }
-              },
-              child: Text("Enregistrer"),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

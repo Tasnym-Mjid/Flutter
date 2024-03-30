@@ -17,6 +17,7 @@ class SignUpScreen extends StatelessWidget {
 
 
 
+
   //authentificate the user
   void signUp(BuildContext context) async {
     try {
@@ -86,6 +87,8 @@ class SignUpScreen extends StatelessWidget {
   }
 
   void separateUsers() async {
+    User? user = FirebaseAuth.instance.currentUser;
+    String? userId=user?.uid;
     // Récupérer tous les documents de la collection 'users'
     QuerySnapshot querySnapshot = await FirebaseFirestore.instance.collection('users').get();
 
@@ -96,19 +99,20 @@ class SignUpScreen extends StatelessWidget {
         'username': userData['username'], // Champs à transférer depuis la collection 'users'
         'lastname': userData['lastname'],
          'role': userData['role'],
+        'email': userData['email']
         // Ajoutez d'autres champs selon vos besoins
       };
 
       // Vérifier le type d'utilisateur
-      //String userType = userData['role']; // Suppose que vous avez un champ 'userType' pour indiquer le type d'utilisateur
+      String userType = userData['role']; // Suppose que vous avez un champ 'userType' pour indiquer le type d'utilisateur
 
       // Ajouter l'utilisateur à la collection appropriée
-      if (_selectedRole == 'Médecin') {
+      if (userType == 'Médecin') {
         // Ajouter l'utilisateur à la collection des médecins
-        await FirebaseFirestore.instance.collection('doctors').doc(doc.id).set(dataToTransfer);
-      } else if (_selectedRole == 'Patient') {
+        await FirebaseFirestore.instance.collection('doctors').doc(userId).set(dataToTransfer);
+      } else if (userType == 'Patient') {
         // Ajouter l'utilisateur à la collection des patients
-        await FirebaseFirestore.instance.collection('patients').doc(doc.id).set(dataToTransfer);
+        await FirebaseFirestore.instance.collection('patients').doc(userId).set(dataToTransfer);
       }
     });
 

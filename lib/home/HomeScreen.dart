@@ -1,30 +1,31 @@
-import 'package:curved_navigation_bar/curved_navigation_bar.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:pfa2/Dossier%20medical/DossierMedicalPage.dart';
-import 'package:pfa2/Patient/ListMedecin.dart';
-import 'package:pfa2/Patient/Randez-vous_Page.dart';
-import 'package:pfa2/main.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:intl/intl.dart';
 
-
+import '../Dossier medical/DossierMedicalPage.dart';
+import '../Patient/EmergencyServiceScreen.dart';
+import '../Patient/ListMedecin.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+  const HomeScreen({Key? key}) : super(key: key);
 
   @override
-  State<HomeScreen> createState() => _HomeScreenState();
+  _HomeScreenState createState() => _HomeScreenState();
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  String? patientId; // L'ID de l'utilisateur connecté
+  String? patientId;
+  String? userName;// L'ID de l'utilisateur connecté
+  List<DocumentSnapshot> appointments = [];
 
   @override
   void initState() {
     super.initState();
     // Récupérer l'ID de l'utilisateur connecté lorsque le widget est créé
     _fetchUserId();
+    // Récupérer les rendez-vous du patient pour aujourd'hui
+    _fetchTodaysAppointments();
   }
 
   Future<void> _fetchUserId() async {
@@ -34,6 +35,13 @@ class _HomeScreenState extends State<HomeScreen> {
       if (user != null) {
         setState(() {
           patientId = user.uid;
+          FirebaseFirestore.instance.collection('patients').doc(patientId).get().then((doc) {
+            if (doc.exists) {
+              setState(() {
+                userName = doc['username']; // Supposant que le champ contenant le nom du patient est 'nom'
+              });
+            }
+          });
         });
       }
     } catch (error) {
@@ -41,30 +49,65 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
+  Future<void> _fetchTodaysAppointments() async {
+    try {
+      // Obtenez une référence à la collection des rendez-vous
+      CollectionReference appointmentsRef = FirebaseFirestore.instance.collection('appointments');
+
+      // Récupérez les rendez-vous du patient pour aujourd'hui
+      QuerySnapshot querySnapshot = await appointmentsRef
+          .where('patientId', isEqualTo: patientId)
+          .get();
+
+      setState(() {
+        appointments = querySnapshot.docs;
+      });
+    } catch (error) {
+      print('Erreur lors de la récupération des rendez-vous du patient : $error');
+    }
+  }
+
+  Future<void> _cancelAppointment(String appointmentId) async {
+    try {
+      // Obtenez une référence au document du rendez-vous
+      DocumentReference appointmentRef = FirebaseFirestore.instance.collection('appointments').doc(appointmentId);
+
+      // Supprimez le rendez-vous
+      await appointmentRef.delete();
+
+      // Mettez à jour l'interface utilisateur en rechargeant les rendez-vous
+      _fetchTodaysAppointments();
+    } catch (error) {
+      print('Erreur lors de l\'annulation du rendez-vous : $error');
+    }
+  }
+
+  Future<void> _markAsCompleted(String appointmentId) async {
+    try {
+      // Obtenez une référence au document du rendez-vous
+      DocumentReference appointmentRef = FirebaseFirestore.instance.collection('appointments').doc(appointmentId);
+
+      // Marquez le rendez-vous comme terminé
+      await appointmentRef.update({'completed': true});
+
+      // Mettez à jour l'interface utilisateur en rechargeant les rendez-vous
+      _fetchTodaysAppointments();
+    } catch (error) {
+      print('Erreur lors du marquage du rendez-vous comme terminé : $error');
+    }
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-       /*bottomNavigationBar: CurvedNavigationBar(
-        backgroundColor: Colors.transparent,
-        buttonBackgroundColor: Colors.blue,
-        color: Colors.blue,
-        animationDuration: const Duration(milliseconds: 300),
-        items: const <Widget>[
-          Icon(Icons.home, size: 26, color: Colors.white),
-          Icon(Icons.account_circle_outlined, size: 26, color: Colors.white),
-          Icon(Icons.add_alert, size: 26, color: Colors.white),
-
-        ],
-      ),*/
       body: SafeArea(
-        child:Padding(
+        child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 25.0),
           child: Column(
             children: [
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text('Hi Jared',
+                  Text('$userName',
                     style: TextStyle(
                       color: Colors.black,
                       fontSize:24,
@@ -79,7 +122,6 @@ class _HomeScreenState extends State<HomeScreen> {
                     child:Icon(Icons.settings,
                         color:Colors.blue,size: 30),
                   ),
-
                 ],
               ),
               SizedBox(height: 25,),
@@ -99,8 +141,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 children: [
                   ElevatedButton(onPressed:(){
                     Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(builder: (context) => MedicalRecordPage(patientId: patientId!,),)
+                        context,
+                        MaterialPageRoute(builder: (context) => MedicalRecordPage(patientId: patientId!,),)
                     );
                   },
                     style: ElevatedButton.styleFrom(
@@ -162,7 +204,11 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ),
                   SizedBox(height: 16,),
-                  ElevatedButton(onPressed:(){},
+                  ElevatedButton(onPressed:(){
+                    Navigator.pushReplacement(context,
+                        MaterialPageRoute(builder: (context) => EmergencyServiceScreen())
+                    );
+                  },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.blue[300],
                       elevation: 8,
@@ -195,7 +241,7 @@ class _HomeScreenState extends State<HomeScreen> {
               SizedBox(height: 25,),
               Row(
                 children: [
-                  Text('Randez-vous pour aujourd\'hui',
+                  Text('Randez-vous :',
                     style: TextStyle(
                       color: Colors.black,
                       fontSize:18,
@@ -206,20 +252,103 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               SizedBox(height: 25,),
               Expanded(
-                child: Container(
-                  color: Colors.blue[300],
+                child: appointments.isEmpty
+                    ? Center(child: Text('Aucun rendez-vous pour aujourd\'hui'))
+                    : ListView.builder(
+                      itemCount: appointments.length,
+                      itemBuilder: (context, index) {
+                    // Récupérez les détails du rendez-vous
+                    Map<String, dynamic> appointmentData = appointments[index].data() as Map<String, dynamic>;
+                    TimeOfDay time = TimeOfDay(
+                      hour: int.parse(appointmentData['heure'].split(':')[0]),
+                      minute: int.parse(appointmentData['heure'].split(':')[1]),
+                    );
 
+                    // Formattez l'heure du rendez-vous
+                     String formattedTime = DateFormat.jm().format(DateTime(1, 1, 1, time.hour, time.minute));
+
+                     return Card(
+                      shadowColor: Colors.blue,
+                      elevation: 8,
+                      margin: EdgeInsets.symmetric(vertical: 8.0),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Container(
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  border: Border.all(color: Colors.blue, width: 2), // Bordure noire de 2 pixels
+                                ),
+                                child: CircleAvatar(
+                                  radius: 20, // Taille du cercle d'avatar
+                                  backgroundImage: NetworkImage('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS6BFtKCAZYI3irqwULvjY5drUF4IJz07Tiyw&usqp=CAU'),
+                                ),
+                              ),
+                              SizedBox(width: 16), // Espacement entre le cercle d'avatar et les informations du rendez-vous
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'Rendez-vous à $formattedTime avec',
+                                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                                  ),
+                                  Text(
+                                    'Dr. ${appointmentData['NomMedecin']} ${appointmentData['PrenomMedecin']}',
+                                    style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+                                  ),
+                                  SizedBox(height: 8),
+                                  Text(
+                                    'Date: ${DateFormat('dd/MM/yyyy').format(appointmentData['date'].toDate())}',
+                                    style: TextStyle(fontSize: 15,color:Colors.blue),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+
+
+
+
+                          appointmentData['completed'] == true
+                              ? Text('Terminé', style: TextStyle(color: Colors.green))
+                              : Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              SizedBox(width: 35),
+                              ElevatedButton(
+                                onPressed: () => _cancelAppointment(appointments[index].id),
+                                child: Text('Annuler',
+                                    style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black)),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.white,
+                                  elevation: 8,
+                                ),                              ),
+                              SizedBox(width: 80),
+                              ElevatedButton(
+                                onPressed: () => _markAsCompleted(appointments[index].id),
+                                child: Text('Terminer',
+                                  style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black),),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.blue[300],
+                                  elevation: 8,
+                                ),                              ),
+                            ],
+                          ),
+                        ],
+
+                      ),
+                    );
+                  },
                 ),
               )
             ],
-
-
           ),
         ),
-
-
-
-
       ),
     );
   }
