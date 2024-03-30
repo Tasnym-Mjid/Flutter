@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:pfa2/Dossier%20medical/DossierMedicalPage.dart';
 
+import '../LoginPage.dart';
 import 'ModifierProfil.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -13,6 +14,8 @@ class ProfileScreen extends StatefulWidget {
 class _ProfileScreenState extends State<ProfileScreen> {
   late Stream<DocumentSnapshot> _profileStream;
   late String _userId;
+  late BuildContext _context;
+
 
   @override
   void initState() {
@@ -25,12 +28,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
+    _context = context;
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
         title: Text('Profile',
-        style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),)
+        style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),),
+          actions: [
+          IconButton(
+          onPressed: () {
+           _signOut(_context);
+             },
+             icon: Icon(Icons.logout),
+    ),
+    ],
       ),
       body: StreamBuilder<DocumentSnapshot>(
         stream: _profileStream,
@@ -196,5 +208,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
         tileColor: Colors.white,
       ),
     );
+  }
+}
+Future<void> _signOut(BuildContext context) async {
+  try {
+    await FirebaseAuth.instance.signOut();
+    // Naviguez vers l'écran de connexion ou la page d'accueil
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => LoginScreen()),
+    );
+  } catch (error) {
+    print('Erreur lors de la déconnexion : $error');
   }
 }
