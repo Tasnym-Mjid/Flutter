@@ -1,7 +1,7 @@
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-
 class AppointmentScreen extends StatefulWidget {
   final String medecinId;
 
@@ -144,6 +144,12 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
         );
         return;
       }
+      User? user = FirebaseAuth.instance.currentUser;
+      String? patientId=user?.uid;
+      DocumentSnapshot medecinSnapshot = await FirebaseFirestore.instance.collection('medecins').doc(medecinId).get();
+      String medecinName = medecinSnapshot['username'];
+      String medecinlLastName = medecinSnapshot['lastname'];
+
 
 
       // Obtenez une référence à la collection des rendez-vous
@@ -156,7 +162,11 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
         'numeroTelephone': _phoneNumberController.text,
         'date': selectedDate,
         'heure': '${selectedTime!.hour}:${selectedTime!.minute}',
-        'medecinId': medecinId,// Convertir en chaîne
+        'NomMedecin': medecinName,
+        'PrenomMedecin': medecinlLastName,
+        'medecinId': medecinId, // Convertir en chaîne
+        'patientId': patientId,
+        'completed': false,
       });
       setState(() {
         selectedDate = null;
@@ -192,7 +202,6 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
           Icon(Icons.home, size: 26, color: Colors.white),
           Icon(Icons.account_circle_outlined, size: 26, color: Colors.white),
           Icon(Icons.add_alert, size: 26, color: Colors.white),
-
         ],
       ),
       appBar: AppBar(
@@ -204,131 +213,134 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
           ),
         ),
       ),
-      body: Center(
-        child: Padding(
-          padding: EdgeInsets.all(20.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text('Réservez un Rendez-vous',
-                style: TextStyle(
-                    fontSize: 30,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.blue[300]
-                ),),
-              SizedBox(height: 60,),
-              InkWell(
-                onTap: () => _selectDate(context),
-                child: Container(
-                  padding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10),
-                    border: Border.all(color: Colors.black),
+      body: SingleChildScrollView(
+        child: Center(
+          child: Padding(
+            padding: EdgeInsets.all(20.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text('Réservez un Rendez-vous',
+                  style: TextStyle(
+                      fontSize: 30,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.blue[300]
                   ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        selectedDate == null
-                            ? 'Choisir une date'
-                            : '${selectedDate!.day}/${selectedDate!.month}/${selectedDate!.year}',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
+                ),
+                SizedBox(height: 60,),
+                InkWell(
+                  onTap: () => _selectDate(context),
+                  child: Container(
+                    padding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(color: Colors.black),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          selectedDate == null
+                              ? 'Choisir une date'
+                              : '${selectedDate!.day}/${selectedDate!.month}/${selectedDate!.year}',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
-                      ),
-                      Icon(
-                        Icons.calendar_today,
-                        color: Colors.black,
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              SizedBox(height: 20),
-              InkWell(
-                onTap: () => _selectTime(context),
-                child: Container(
-                  padding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10),
-                    border: Border.all(color: Colors.black),
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        selectedTime == null
-                            ? 'Choisir l\'heure'
-                            : '${selectedTime!.hour}:${selectedTime!.minute}',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
+                        Icon(
+                          Icons.calendar_today,
+                          color: Colors.black,
                         ),
-                      ),
-                      Icon(
-                        Icons.access_time,
-                        color: Colors.black,
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
-              ),
-              SizedBox(height: 20),
-              TextField(
-                controller: _nameController,
-                decoration: InputDecoration(
-                  labelText: 'Votre nom',
-                  prefixIcon: Icon(Icons.person),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10.0),
-                    borderSide: BorderSide(color: Colors.blue),
+                SizedBox(height: 20),
+                InkWell(
+                  onTap: () => _selectTime(context),
+                  child: Container(
+                    padding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(color: Colors.black),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          selectedTime == null
+                              ? 'Choisir l\'heure'
+                              : '${selectedTime!.hour}:${selectedTime!.minute}',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        Icon(
+                          Icons.access_time,
+                          color: Colors.black,
+                        ),
+                      ],
+                    ),
                   ),
                 ),
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
-                cursorColor: Colors.blue,
-              ),
-              SizedBox(height: 20,),
-              TextField(
-                controller: _phoneNumberController,
-                decoration: InputDecoration(
-                  labelText: '+216',
-                  prefixIcon: Icon(Icons.phone),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10.0),
-                    borderSide: BorderSide(color: Colors.blue),
+                SizedBox(height: 20),
+                TextField(
+                  controller: _nameController,
+                  decoration: InputDecoration(
+                    labelText: 'Votre nom',
+                    prefixIcon: Icon(Icons.person),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10.0),
+                      borderSide: BorderSide(color: Colors.blue),
+                    ),
                   ),
-                ),
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
-                cursorColor: Colors.blue,
-              ),
-              SizedBox(height: 20,),
-              ElevatedButton(
-                onPressed: (){_saveAppointment(widget.medecinId);},
-                child: Text(
-                  'Réserver',
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
-                    color: Colors.white,
+                  ),
+                  cursorColor: Colors.blue,
+                ),
+                SizedBox(height: 20,),
+                TextField(
+                  controller: _phoneNumberController,
+                  decoration: InputDecoration(
+                    labelText: '+216',
+                    prefixIcon: Icon(Icons.phone),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10.0),
+                      borderSide: BorderSide(color: Colors.blue),
+                    ),
+                  ),
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  cursorColor: Colors.blue,
+                ),
+                SizedBox(height: 20,),
+                ElevatedButton(
+                  onPressed: (){_saveAppointment(widget.medecinId);},
+                  child: Text(
+                    'Réserver',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                  style: ElevatedButton.styleFrom(
+                    padding: EdgeInsets.symmetric(horizontal: 40, vertical: 15),
+                    backgroundColor: Colors.blue,
+                    elevation: 5,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
                   ),
                 ),
-                style: ElevatedButton.styleFrom(
-                  padding: EdgeInsets.symmetric(horizontal: 40, vertical: 15),
-                  backgroundColor: Colors.blue,
-                  elevation: 5,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
