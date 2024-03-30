@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'PatientsListScreen.dart'; // Importez l'écran de liste des patients ici
 import 'MedecinProfileScreen.dart'; // Importez l'écran du profil du médecin ici
+import 'DonnerAvis.dart'; // Importez l'écran pour donner un avis ici
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'AgendaMedecin.dart';
@@ -136,6 +137,41 @@ class MedecinScreen extends StatelessWidget {
                   SizedBox(width: 8),
                   Text(
                     "Patients",
+                    style: TextStyle(
+                      fontWeight: FontWeight.w600,
+                      fontSize: 18,
+                      color: Colors.white,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            SizedBox(height: 20),
+            MaterialButton(
+              minWidth: double.infinity,
+              height: 60,
+              onPressed: () {
+                // Naviguer vers la page pour donner un avis
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => MedecinQuestionsScreen()),
+                );
+              },
+              color: Color(0xff0095FF),
+              elevation: 0,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(50),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Icon(
+                    Icons.warning,
+                    color: Colors.white,
+                  ),
+                  SizedBox(width: 8),
+                  Text(
+                    "Donner un avis",
                     style: TextStyle(
                       fontWeight: FontWeight.w600,
                       fontSize: 18,

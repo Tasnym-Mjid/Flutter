@@ -2,9 +2,10 @@ import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../Dossier medical/DossierMedicalPage.dart';
+import '../Patient/AskDoctorScreen.dart';
 import '../Patient/ListMedecin.dart';
 import '../Patient/EmergencyServiceScreen.dart';
-import '../Patient/ProfilePatient.dart'; // Import de la page EmergencyServiceScreen
+import '../Patient/ProfilePatient.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key});
@@ -14,18 +15,16 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  String? patientId; // L'ID de l'utilisateur connecté
+  String? patientId;
 
   @override
   void initState() {
     super.initState();
-    // Récupérer l'ID de l'utilisateur connecté lorsque le widget est créé
     _fetchUserId();
   }
 
   Future<void> _fetchUserId() async {
     try {
-      // Obtenir l'utilisateur actuellement connecté avec Firebase Authentication
       User? user = FirebaseAuth.instance.currentUser;
       if (user != null) {
         setState(() {
@@ -85,7 +84,6 @@ class _HomeScreenState extends State<HomeScreen> {
                   ElevatedButton(
                     onPressed: patientId != null
                         ? () {
-                      // Naviguer vers la page du dossier médical en passant l'ID du patient
                       Navigator.push(
                         context,
                         MaterialPageRoute(
@@ -148,8 +146,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   SizedBox(height: 16),
                   ElevatedButton(
                     onPressed: () {
-                      // Naviguer vers la page EmergencyServiceScreen lors du clic sur le bouton
-                      Navigator.push(context, MaterialPageRoute(builder: (context) => EmergencyServiceScreen()));
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => AskDoctorScreen()));
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.blue[300],
@@ -164,7 +161,35 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                         SizedBox(width: 8),
                         Text(
-                          "Demander Service d\'urgence",
+                          "Demander un avis de médecin",
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 18,
+                            color: Colors.black,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  SizedBox(height: 16),
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => EmergencyServiceScreen()));
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.blue[300],
+                      elevation: 8,
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        Icon(
+                          Icons.add_alert,
+                          color: Colors.black,
+                        ),
+                        SizedBox(width: 8),
+                        Text(
+                          "Demander un service d'urgence",
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 18,
@@ -209,13 +234,10 @@ class _HomeScreenState extends State<HomeScreen> {
           Icon(Icons.account_circle_outlined, size: 26, color: Colors.white),
         ],
         onTap: (index) {
-          // Actions à effectuer lors de la navigation entre les onglets
           switch (index) {
             case 0:
-            // Action pour l'onglet Accueil
               break;
             case 1:
-            // Naviguer vers l'écran du profil du médecin
               Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => ProfileScreen()),

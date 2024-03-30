@@ -11,12 +11,12 @@ class MedicalRecordPage extends StatefulWidget {
   final String patientId;
 
   const MedicalRecordPage({Key? key, required this.patientId}) : super(key: key);
-
   @override
   _MedicalRecordPageState createState() => _MedicalRecordPageState();
 }
 
 class _MedicalRecordPageState extends State<MedicalRecordPage> {
+  String? uid; // L'ID de l'utilisateur connecté
   List<Widget> pages = [
     LaboResultScreen(),
     MedicalHistoryScreen(),
@@ -36,8 +36,22 @@ class _MedicalRecordPageState extends State<MedicalRecordPage> {
   @override
   void initState() {
     super.initState();
-    // Supprimez la récupération de l'ID de l'utilisateur connecté
-    // car vous utilisez l'ID du patient passé en tant que propriété
+    // Récupérer l'ID de l'utilisateur connecté lorsque le widget est créé
+    _fetchUid();
+  }
+
+  Future<void> _fetchUid() async {
+    try {
+      // Obtenir l'utilisateur actuellement connecté avec Firebase Authentication
+      User? user = FirebaseAuth.instance.currentUser;
+      if (user != null) {
+        setState(() {
+          uid = user.uid;
+        });
+      }
+    } catch (error) {
+      print('Erreur lors de la récupération de l\'ID de l\'utilisateur : $error');
+    }
   }
 
   @override
@@ -45,97 +59,142 @@ class _MedicalRecordPageState extends State<MedicalRecordPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Dossier médical'),
-        backgroundColor: Colors.blue, // Couleur de l'app bar
       ),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Image.asset(
-                  'images/account.png',
-                  height: 170,
-                  width: 150,
-                  fit: BoxFit.cover,
-                ),
-                SizedBox(height: 16),
-                StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
-                  stream: FirebaseFirestore.instance.collection('patients').doc(widget.patientId).snapshots(),
-                  builder: (context, patientSnapshot) {
-                    if (patientSnapshot.connectionState == ConnectionState.waiting) {
-                      return CircularProgressIndicator();
-                    } else if (patientSnapshot.hasError) {
-                      return Text('Erreur de chargement du nom du patient');
-                    } else if (!patientSnapshot.hasData || !patientSnapshot.data!.exists) {
-                      return Text('Nom de patient non trouvé');
-                    } else {
-                      String patientName = patientSnapshot.data!.data()!['username'];
-                      String patientlastName=patientSnapshot.data!.data()!['lastname'];
-                      return Text(
-                        patientName,
-                        style: TextStyle(
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
+      body: Center(
+        child: Card(
+          margin: EdgeInsets.all(16.0),
+          elevation: 4, // Élévation de la carte
+          color: Colors.blueGrey,
+          child: ListView(
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child:Center(
+                  child: Column(
+                    //crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Container(
+                        width: 150,
+                        height: 150,
+                        decoration: BoxDecoration(
+                          color: Colors.blue, // Couleur bleue pour le fond
+                          shape: BoxShape.circle, // Forme circulaire
                         ),
-                      );
-                    }
-                  },
+                        child: CircleAvatar(
+                          radius: 50,
+                          backgroundImage: NetworkImage('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS6BFtKCAZYI3irqwULvjY5drUF4IJz07Tiyw&usqp=CAU'),
+                        ),
+                      ),
+                      SizedBox(height: 16),
+                      StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+                        stream: FirebaseFirestore.instance.collection('patients').doc(uid).snapshots(),
+                        builder: (context, patientSnapshot) {
+                          if (patientSnapshot.connectionState == ConnectionState.waiting) {
+                            return CircularProgressIndicator(); // Indicateur de chargement
+                          } else if (patientSnapshot.hasError) {
+                            return Text('Erreur de chargement du nom du patient');
+                          } else if (!patientSnapshot.hasData || !patientSnapshot.data!.exists) {
+                            return Text('Nom de patient non trouvé');
+                          } else {
+                            String patientName = patientSnapshot.data!.data()!['username'];
+                            String patientlastName = patientSnapshot.data!.data()!['lastname'];
+                            return Text(
+                              '$patientName $patientlastName',
+                              style: TextStyle(
+                                fontSize: 24,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            );
+                          }
+                        },
+                      ),
+                    ],
+                  ),
                 ),
-              ],
-            ),
-          ),
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: ListView.builder(
-                itemCount: categories.length,
-                itemBuilder: (context, index) {
-                  return InkWell(
+              ),
+              ...categories.map((category) {
+                return Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: InkWell(
                     onTap: () {
+                      // Naviguer vers la page correspondante à l'index de la carte
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => pages[index]),
+                        MaterialPageRoute(builder: (context) => pages[categories.indexOf(category)]),
                       );
                     },
                     child: Card(
-                      elevation: 4,
+                      elevation: 4, // Élévation de la carte
                       margin: EdgeInsets.symmetric(vertical: 8.0),
                       child: ListTile(
-                        leading: _buildIcon(categories[index]),
+                        leading: _buildIcon(category), // Icône à côté du texte
                         title: Text(
-                          categories[index],
+                          category,
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
-                            color: Colors.blue,
+                            color: Colors.blue, // Couleur du texte en gras
                           ),
                         ),
+                        //subtitle: _buildSubtitle(medicalData.entries.elementAt(index).value),
                       ),
                     ),
-                  );
-                },
-              ),
-            ),
+                  ),
+                );
+              }).toList(),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
 
+  // Méthode pour construire l'icône en fonction du texte de l'élément de la liste
   Widget _buildIcon(String text) {
     switch (text) {
       case 'Résultats labos':
-        return Icon(Icons.local_hospital);
+        return Icon(Icons.local_hospital); // Icône pour le résultat de laboratoire
       case 'Allergies':
-        return Icon(Icons.coronavirus);
+        return Icon(Icons.coronavirus); // Icône pour les allergies
       case 'Consultations':
-        return Icon(Icons.local_hospital_outlined);
+        return Icon(Icons.local_hospital_outlined); // Icône pour les consultations
       case 'Antécédents':
-        return Icon(Icons.history);
+        return Icon(Icons.history); // Icône pour les antécédents médicaux
       default:
-        return Icon(Icons.error);
+        return Icon(Icons.error); // Icône par défaut en cas de texte inconnu
+    }
+  }
+
+  Widget _buildSubtitle(dynamic value) {
+    if (value is List) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: value
+            .map(
+              (item) => Padding(
+            padding: const EdgeInsets.only(left: 16.0),
+            child: Text(
+              '- $item',
+              style: TextStyle(
+                fontSize: 14,
+                color: Colors.black87, // Couleur du texte de la liste
+              ),
+            ),
+          ),
+        )
+            .toList(),
+      );
+    } else {
+      return Padding(
+        padding: const EdgeInsets.only(left: 16.0),
+        child: Text(
+          value.toString(),
+          style: TextStyle(
+            fontSize: 16,
+            color: Colors.black87, // Couleur du texte
+          ),
+        ),
+      );
     }
   }
 }

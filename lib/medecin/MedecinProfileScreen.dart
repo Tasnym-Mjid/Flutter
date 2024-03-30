@@ -86,6 +86,7 @@ class _MedecinProfileScreenState extends State<MedecinProfileScreen> {
                             ),
                           ],
                         ),
+
                       ),
                       CircleAvatar(
                         radius: 70,
