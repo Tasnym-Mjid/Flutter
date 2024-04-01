@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:pfa2/home/HomeScreen.dart'; // Import de la page pour les patients
-import 'package:pfa2/medecin/MedecinScreen.dart'; // Import de la page pour les médecins
+
+import 'home/HomeScreen.dart';
+import 'home/Main_layout.dart';
+import 'medecin/Mainlayaout.dart'; // Import de la page pour les médecins
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -30,12 +32,12 @@ class _LoginScreenState extends State<LoginScreen> {
       if (role == 'Patient') {
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => HomeScreen()), // Page pour les patients
+          MaterialPageRoute(builder: (context) =>MainLayout()), // Page pour les patients
         );
       } else if (role == 'Médecin') {
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => MedecinScreen()), // Page pour les médecins
+          MaterialPageRoute(builder: (context) => MainLayoutt()), // Page pour les médecins
         );
       } else {
         // Redirection par défaut vers la page d'accueil générale

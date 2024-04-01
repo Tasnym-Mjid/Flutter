@@ -8,6 +8,8 @@ import '../Patient/ListMedecin.dart';
 import '../Patient/EmergencyServiceScreen.dart';
 import 'package:intl/intl.dart';
 
+import '../Patient/ProfilePatient.dart';
+
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -18,7 +20,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   String? patientId;
-  String? userName;// L'ID de l'utilisateur connecté
+  String? userName; // L'ID de l'utilisateur connecté
   List<DocumentSnapshot> appointments = [];
 
   @override
@@ -57,9 +59,7 @@ class _HomeScreenState extends State<HomeScreen> {
       CollectionReference appointmentsRef = FirebaseFirestore.instance.collection('appointments');
 
       // Récupérez les rendez-vous du patient pour aujourd'hui
-      QuerySnapshot querySnapshot = await appointmentsRef
-          .where('patientId', isEqualTo: patientId)
-          .get();
+      QuerySnapshot querySnapshot = await appointmentsRef.where('patientId', isEqualTo: patientId).get();
 
       setState(() {
         appointments = querySnapshot.docs;
@@ -98,194 +98,192 @@ class _HomeScreenState extends State<HomeScreen> {
       print('Erreur lors du marquage du rendez-vous comme terminé : $error');
     }
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 25.0),
-          child: Column(
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text('$userName',
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontSize:24,
-                      fontWeight:FontWeight.bold,
-                    ),),
-                  Container(
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(12),
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 25.0),
+            child: Column(
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      '$userName',
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
-                    padding: EdgeInsets.all(16),
-                    child:Icon(Icons.settings,
-                        color:Colors.blue,size: 30),
-                  ),
-                ],
-              ),
-              SizedBox(height: 25,),
-              Row(
-                children: [
-                  Text('Qu\'est ce que vous souhaitez faire?',
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontSize:18,
-                      fontWeight:FontWeight.bold,
+                    Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      padding: EdgeInsets.all(16),
+                      child: Icon(Icons.settings, color: Colors.blue, size: 30),
                     ),
-                  ),
-                ],
-              ),
-              SizedBox(height: 25,),
-              Column(
-                children: [
-                  ElevatedButton(onPressed:(){
-                    Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(builder: (context) => MedicalRecordPage(patientId: patientId!,),)
-                    );
-                  },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.blue[300],
-                      elevation: 8,
+                  ],
+                ),
+                SizedBox(height: 25,),
+                Row(
+                  children: [
+                    Text(
+                      'Qu\'est ce que vous souhaitez faire?',
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
-
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
-                        Icon(
-                          Icons.folder_rounded, // Icône à afficher (par exemple)
-                          color: Colors.black,   // Couleur de l'icône
-                        ),
-                        SizedBox(width: 8),  // Espacement entre l'icône et le texte
-                        Text(
-                          "Consulter Dossier médical",
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 18,
+                  ],
+                ),
+                SizedBox(height: 25,),
+                Column(
+                  children: [
+                    ElevatedButton(
+                      onPressed: () {
+                        Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(builder: (context) => MedicalRecordPage(patientId: patientId!,),)
+                        );
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.blue[300],
+                        elevation: 8,
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          Icon(
+                            Icons.folder_rounded,
                             color: Colors.black,
                           ),
-
-                        ),
-
-                      ],
+                          SizedBox(width: 8),
+                          Text(
+                            "Consulter Dossier médical",
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 18,
+                              color: Colors.black,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                  SizedBox(height: 16,),
-                  ElevatedButton(onPressed:(){
-                    Navigator.pushReplacement(context,
-                        MaterialPageRoute(builder: (context) => ListMedecin())
-                    );
-                  },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.blue[300],
-                      elevation: 8,
-                    ),
-
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
-                        Icon(
-                          Icons.calendar_month, // Icône à afficher (par exemple)
-                          color: Colors.black,   // Couleur de l'icône
-                        ),
-                        SizedBox(width: 8),  // Espacement entre l'icône et le texte
-                        Text(
-                          "Passer un rendez-vous",
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 18,
+                    SizedBox(height: 16,),
+                    ElevatedButton(
+                      onPressed: () {
+                        Navigator.pushReplacement(context,
+                            MaterialPageRoute(builder: (context) => ListMedecin())
+                        );
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.blue[300],
+                        elevation: 8,
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          Icon(
+                            Icons.calendar_month,
                             color: Colors.black,
                           ),
-
-                        ),
-
-                      ],
+                          SizedBox(width: 8),
+                          Text(
+                            "Passer un rendez-vous",
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 18,
+                              color: Colors.black,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                  SizedBox(height: 16,),
-
-                  ElevatedButton(
-                    onPressed: () {
-                      Navigator.push(context, MaterialPageRoute(builder: (context) => AskDoctorScreen()));
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.blue[300],
-                      elevation: 8,
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
-                        Icon(
-                          Icons.local_hospital,
-                          color: Colors.black,
-                        ),
-                        SizedBox(width: 8),
-                        Text(
-                          "Demander un avis de médecin",
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 18,
+                    SizedBox(height: 16,),
+                    ElevatedButton(
+                      onPressed: () {
+                        Navigator.push(context, MaterialPageRoute(builder: (context) => AskDoctorScreen()));
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.blue[300],
+                        elevation: 8,
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          Icon(
+                            Icons.local_hospital,
                             color: Colors.black,
                           ),
-                        ),
-                      ],
+                          SizedBox(width: 8),
+                          Text(
+                            "Demander un avis de médecin",
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 18,
+                              color: Colors.black,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                  SizedBox(height: 16),
-                  ElevatedButton(onPressed:(){
-                    Navigator.pushReplacement(context,
-                        MaterialPageRoute(builder: (context) => EmergencyServiceScreen())
-                    );
-                  },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.blue[300],
-                      elevation: 8,
-                    ),
-
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
-                        Icon(
-                          Icons.local_hospital, // Icône à afficher (par exemple)
-                          color: Colors.black,   // Couleur de l'icône
-                        ),
-                        SizedBox(width: 8),  // Espacement entre l'icône et le texte
-                        Text(
-                          "Demander Service d\'urgence",
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 18,
+                    SizedBox(height: 16),
+                    ElevatedButton(
+                      onPressed: () {
+                        Navigator.pushReplacement(context,
+                            MaterialPageRoute(builder: (context) => EmergencyServiceScreen())
+                        );
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.blue[300],
+                        elevation: 8,
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          Icon(
+                            Icons.local_hospital,
                             color: Colors.black,
                           ),
-
-                        ),
-
-                      ],
+                          SizedBox(width: 8),
+                          Text(
+                            "Demander Service d\'urgence",
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 18,
+                              color: Colors.black,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                ],
-
-              ),
-              SizedBox(height: 25,),
-              Row(
-                children: [
-                  Text('Randez-vous :',
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontSize:18,
-                      fontWeight:FontWeight.bold,
+                  ],
+                ),
+                SizedBox(height: 25,),
+                Row(
+                  children: [
+                    Text(
+                      'Randez-vous :',
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
-                  ),
-                ],
-              ),
-              SizedBox(height: 25,),
-              Expanded(
-                child: appointments.isEmpty
+                  ],
+                ),
+                SizedBox(height: 25,),
+                appointments.isEmpty
                     ? Center(child: Text('Aucun rendez-vous pour aujourd\'hui'))
                     : ListView.builder(
+                  shrinkWrap: true,
+                  physics: NeverScrollableScrollPhysics(),
                   itemCount: appointments.length,
                   itemBuilder: (context, index) {
                     // Récupérez les détails du rendez-vous
@@ -339,10 +337,6 @@ class _HomeScreenState extends State<HomeScreen> {
                               ),
                             ],
                           ),
-
-
-
-
                           appointmentData['completed'] == true
                               ? Text('Terminé', style: TextStyle(color: Colors.green))
                               : Row(
@@ -358,7 +352,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: Colors.white,
                                   elevation: 8,
-                                ),                              ),
+                                ),
+                              ),
                               SizedBox(width: 80),
                               ElevatedButton(
                                 onPressed: () => _markAsCompleted(appointments[index].id),
@@ -367,20 +362,21 @@ class _HomeScreenState extends State<HomeScreen> {
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: Colors.blue[300],
                                   elevation: 8,
-                                ),                              ),
+                                ),
+                              ),
                             ],
                           ),
                         ],
-
                       ),
                     );
                   },
                 ),
-              )
-            ],
+              ],
+            ),
           ),
         ),
       ),
+
     );
   }
 }

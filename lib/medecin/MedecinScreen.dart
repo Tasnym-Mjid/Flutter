@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'PatientsListScreen.dart'; // Importez l'écran de liste des patients ici
 import 'MedecinProfileScreen.dart'; // Importez l'écran du profil du médecin ici
 import 'DonnerAvis.dart'; // Importez l'écran pour donner un avis ici
-import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'AgendaMedecin.dart';
 
@@ -184,32 +183,7 @@ class MedecinScreen extends StatelessWidget {
           ],
         ),
       ),
-      bottomNavigationBar: CurvedNavigationBar(
-        backgroundColor: Colors.transparent,
-        buttonBackgroundColor: Colors.blue,
-        color: Colors.blue,
-        animationDuration: const Duration(milliseconds: 300),
-        items: const <Widget>[
-          Icon(Icons.home, size: 26, color: Colors.white),
-          Icon(Icons.account_circle_outlined, size: 26, color: Colors.white),
-        ],
-        onTap: (index) {
-          // Actions à effectuer lors de la navigation entre les onglets
-          switch (index) {
-            case 0:
-            // Action pour l'onglet Accueil
-              break;
-            case 1:
-            // Naviguer vers l'écran du profil du médecin
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => MedecinProfileScreen()),
-              );
-              break;
 
-          }
-        },
-      ),
     );
   }
 }
