@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
+import '../LoginPage.dart';
 import 'ReglageMedecin.dart';
 
 class MedecinProfileScreen extends StatefulWidget {
@@ -13,6 +14,8 @@ class MedecinProfileScreen extends StatefulWidget {
 class _MedecinProfileScreenState extends State<MedecinProfileScreen> {
   late Stream<DocumentSnapshot> _profileStream;
   late String _userId;
+  late BuildContext _context;
+
 
   @override
   void initState() {
@@ -25,12 +28,26 @@ class _MedecinProfileScreenState extends State<MedecinProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
+    _context=context;
     return Scaffold(
       appBar: AppBar(
-          backgroundColor: Colors.transparent,
-          elevation: 0,
-          title: Text('Profile',
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),)
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        leading: Image.asset(
+          'images/LogoDocDash.png', // Chemin de l'image locale
+          height: 100, // Ajustez la taille selon vos besoins
+          // width: 40,
+        ),
+        title: Text('Profile',
+          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),),
+        actions: [
+          IconButton(
+            onPressed: () {
+              _signOut(_context);
+            },
+            icon: Icon(Icons.logout),
+          ),
+        ],
       ),
       body: StreamBuilder<DocumentSnapshot>(
         stream: _profileStream,
@@ -86,7 +103,6 @@ class _MedecinProfileScreenState extends State<MedecinProfileScreen> {
                             ),
                           ],
                         ),
-
                       ),
                       CircleAvatar(
                         radius: 70,
@@ -134,6 +150,8 @@ class _MedecinProfileScreenState extends State<MedecinProfileScreen> {
                   const SizedBox(height: 10),
                   itemProfile('Adresse', medecinData['address'] ?? 'N/A', Icons.location_on),
                   const SizedBox(height: 10),
+                  itemProfile('Specialite', medecinData['specialite'] ?? 'N/A', Icons.location_on),
+                  const SizedBox(height: 10),
                   itemProfile('Numéro de téléphone', medecinData['phoneNumber'] ?? 'N/A', Icons.phone),
                   const SizedBox(height: 10),
                   itemProfile('Disponibilité en cas d\'urgence', medecinData['disponibilite'], Icons.warning),
@@ -174,5 +192,17 @@ class _MedecinProfileScreenState extends State<MedecinProfileScreen> {
         tileColor: Colors.white,
       ),
     );
+  }
+}
+Future<void> _signOut(BuildContext context) async {
+  try {
+    await FirebaseAuth.instance.signOut();
+    // Naviguez vers l'écran de connexion ou la page d'accueil
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => LoginScreen()),
+    );
+  } catch (error) {
+    print('Erreur lors de la déconnexion : $error');
   }
 }

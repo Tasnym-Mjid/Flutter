@@ -22,6 +22,7 @@ class _ReglageMedecinState extends State<ReglageMedecin> {
   late TextEditingController _addressController;
   late TextEditingController _phoneNumberController;
   late TextEditingController _disponibiliteController;
+  late TextEditingController _specialiteController; // Nouveau TextEditingController pour la spécialité
 
   Uint8List? _image;
 
@@ -40,6 +41,7 @@ class _ReglageMedecinState extends State<ReglageMedecin> {
     _addressController = TextEditingController();
     _phoneNumberController = TextEditingController();
     _disponibiliteController = TextEditingController();
+    _specialiteController = TextEditingController(); // Initialisation du TextEditingController pour la spécialité
 
     FirebaseFirestore.instance
         .collection('medecins')
@@ -56,6 +58,7 @@ class _ReglageMedecinState extends State<ReglageMedecin> {
             _addressController.text = data['address'] ?? '';
             _disponibiliteController.text =
             data['disponibilite'] != null ? data['disponibilite'].toString() : '';
+            _specialiteController.text = data['specialite'] ?? ''; // Pré-remplir le champ spécialité si des données existent
           });
         }
       }
@@ -69,6 +72,7 @@ class _ReglageMedecinState extends State<ReglageMedecin> {
     _phoneNumberController.dispose();
     _addressController.dispose();
     _disponibiliteController.dispose();
+    _specialiteController.dispose(); // Libération des ressources du TextEditingController pour la spécialité
     super.dispose();
   }
 
@@ -193,6 +197,16 @@ class _ReglageMedecinState extends State<ReglageMedecin> {
                         fillColor: Colors.white,
                       ),
                     ),
+                    SizedBox(height: 10),
+                    TextField(
+                      controller: _specialiteController, // Utilisation du TextEditingController pour la spécialité
+                      decoration: InputDecoration(
+                        labelText: 'Spécialité',
+                        border: OutlineInputBorder(),
+                        filled: true,
+                        fillColor: Colors.white,
+                      ),
+                    ),
                     SizedBox(height: 20),
                     ElevatedButton(
                       onPressed: () {
@@ -202,6 +216,7 @@ class _ReglageMedecinState extends State<ReglageMedecin> {
                           'address': _addressController.text,
                           'phoneNumber': _phoneNumberController.text,
                           'disponibilite': _disponibiliteController.text.toLowerCase() == 'true',
+                          'specialite': _specialiteController.text, // Enregistrer la spécialité dans Firestore
                         }).then((_) {
                           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                             content: Text('Informations mises à jour avec succès'),
