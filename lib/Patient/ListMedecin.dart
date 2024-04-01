@@ -1,7 +1,9 @@
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter/material.dart';
+import 'package:pfa2/home/Main_layout.dart';
 
 import '../Firebase/readListView.dart';
+import '../home/AppBar.dart';
 
 class ListMedecin extends StatefulWidget {
   @override
@@ -17,25 +19,16 @@ class _ListMedecin extends State<ListMedecin> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      bottomNavigationBar: CurvedNavigationBar(
-        backgroundColor: Colors.transparent,
-        buttonBackgroundColor: Colors.blue,
-        color: Colors.blue,
-        animationDuration: const Duration(milliseconds: 300),
-        items: const <Widget>[
-          Icon(Icons.home, size: 26, color: Colors.white),
-          Icon(Icons.account_circle_outlined, size: 26, color: Colors.white),
-          Icon(Icons.add_alert, size: 26, color: Colors.white),
 
-        ],
-      ),
-      appBar: AppBar(
-        title: Text('Liste des medecins',
-          style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: Colors.black
-          ),),
+      appBar: CustomAppBar(
+        pageTitle: 'Liste des médecins',
+        onBack: () {
+
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => MainLayout()),
+            );
+          } ,
       ),
       body: Padding(
         padding: EdgeInsets.all(16.0),

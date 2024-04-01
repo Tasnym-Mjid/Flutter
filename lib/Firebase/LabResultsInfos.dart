@@ -70,21 +70,22 @@ class _LabResultsInfosState extends State<LabResultsInfos> {
     );
   }
 }
+
 class LabResultCard extends StatelessWidget {
   final String testName;
   final String resultValue;
   final String resultDate;
-  //final VoidCallback onViewDetails; // Changement de nom pour rendre son utilisation plus claire
 
   LabResultCard({
     required this.testName,
     required this.resultValue,
     required this.resultDate,
-    //required this.onViewDetails,
   });
 
   @override
   Widget build(BuildContext context) {
+    List<String> resultValueList = resultValue.split(','); // Séparez les valeurs par une virgule (ou tout autre séparateur que vous utilisez)
+
     return Card(
       elevation: 4,
       child: Column(
@@ -98,19 +99,15 @@ class LabResultCard extends StatelessWidget {
             subtitle: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('Résultat: $resultValue'),
+                // Affichez chaque élément de la liste sur une nouvelle ligne
+                for (String value in resultValueList)
+                  Text(value),
                 Text('Date: $resultDate'),
               ],
             ),
           ),
-          /*TextButton(
-            onPressed: onViewDetails, // Utilisez la fonction de rappel
-            child: Text('Voir les détails des tests'),
-          ),*/
         ],
       ),
     );
   }
 }
-
-

@@ -47,7 +47,7 @@ class HomePage extends StatelessWidget {
               Column(
                 children: <Widget>[
                   Text(
-                    "Welcome",
+                    "Bienvenue",
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 30,
@@ -58,11 +58,12 @@ class HomePage extends StatelessWidget {
                   SizedBox(
                     height: 20,
                   ),
-                  Text("BackSlash Flutter provides extraordinary flutter tutorials. Do Subscribe! ",
+                  Text("Sur votre application ",
                     textAlign: TextAlign.center,
                     style: TextStyle(
-                      color: Colors.grey[700],
+                      color: Colors.blue,
                       fontSize: 15,
+                      fontWeight: FontWeight.bold
 
                     ),)
                 ],
@@ -70,9 +71,10 @@ class HomePage extends StatelessWidget {
               Container(
                 height: MediaQuery.of(context).size.height / 3,
                 decoration: BoxDecoration(
-                    /*image: DecorationImage(
-                        image: AssetImage("assets/welcome.png")
-                    )*/
+                    image: DecorationImage(
+                        image: AssetImage("images/Logo-DocDash.png"),
+                        fit: BoxFit.contain,
+                    )
                 ),
               ),
 
@@ -82,6 +84,7 @@ class HomePage extends StatelessWidget {
                   MaterialButton(
                     minWidth: double.infinity,
                     height: 60,
+                    elevation: 5,
                     onPressed: () {
                       Navigator.push(context, MaterialPageRoute(builder: (context) => LoginScreen()));
 
@@ -93,8 +96,9 @@ class HomePage extends StatelessWidget {
                         ),
                         borderRadius: BorderRadius.circular(50)
                     ),
+                    color: Colors.white,
                     child: Text(
-                      "Login",
+                      "Se connecter",
                       style: TextStyle(
                           fontWeight: FontWeight.w600,
                           fontSize: 18
@@ -106,6 +110,7 @@ class HomePage extends StatelessWidget {
                   MaterialButton(
                     minWidth: double.infinity,
                     height: 60,
+                    elevation: 5,
                     onPressed: (){
                       Navigator.push(context, MaterialPageRoute(builder: (context)=> SignUpScreen()));
 
@@ -115,7 +120,7 @@ class HomePage extends StatelessWidget {
                         borderRadius: BorderRadius.circular(50)
                     ),
                     child: Text(
-                      "Sign up",
+                      "S'inscrire",
                       style: TextStyle(
                           color: Colors.white,
                           fontWeight: FontWeight.w600,

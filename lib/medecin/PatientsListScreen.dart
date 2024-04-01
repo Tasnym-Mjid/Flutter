@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
+import 'package:pfa2/medecin/Mainlayout.dart';
+import 'package:pfa2/medecin/MedecinScreen.dart';
 import '../Dossier medical/DossierMedicalPage.dart';
+import '../home/AppBar.dart';
 
 class PatientsListScreen extends StatefulWidget {
   @override
@@ -21,22 +24,15 @@ class _PatientsListScreenState extends State<PatientsListScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          "DocDash",
-          style: TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.w600,
-            color: Colors.blue,
-          ),
-        ),
-        actions: <Widget>[
-          IconButton(
-            onPressed: () {},
-            icon: const Icon(Icons.settings, size: 26),
-            color: Colors.blue,
-          ),
-        ],
+      appBar: CustomAppBar(
+        pageTitle: 'Liste des patients',
+        onBack: () {
+
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => MainLayoutt()),
+          );
+        } ,
       ),
       body: Column(
         children: [
@@ -105,32 +101,7 @@ class _PatientsListScreenState extends State<PatientsListScreen> {
           ),
         ],
       ),
-      bottomNavigationBar: CurvedNavigationBar(
-        backgroundColor: Colors.transparent,
-        buttonBackgroundColor: Colors.blue,
-        color: Colors.blue,
-        animationDuration: const Duration(milliseconds: 300),
-        items: const <Widget>[
-          Icon(Icons.home, size: 26, color: Colors.white),
-          Icon(Icons.account_circle_outlined, size: 26, color: Colors.white),
-          Icon(Icons.add_alert, size: 26, color: Colors.white),
-        ],
-        onTap: (index) {
-          // Actions à effectuer lors de la navigation entre les onglets
-          switch (index) {
-            case 0:
-            // Action pour l'onglet Accueil
-              break;
-            case 1:
-            // Action pour l'onglet Notifications
-              break;
-            case 2:
-            // Action pour l'onglet Profil
-              break;
-            default:
-          }
-        },
-      ),
+
     );
   }
 }

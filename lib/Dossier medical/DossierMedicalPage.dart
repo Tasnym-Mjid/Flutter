@@ -3,6 +3,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:pfa2/Dossier%20medical/ConsultationPage.dart';
 import 'package:pfa2/Dossier%20medical/ResultatLaboPage.dart';
+import 'package:pfa2/home/Main_layout.dart';
+import '../home/AppBar.dart';
 import 'AllergiePage.dart';
 import 'AntecedantPage.dart';
 
@@ -56,14 +58,20 @@ class _MedicalRecordPageState extends State<MedicalRecordPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Dossier médical'),
+      appBar: CustomAppBar(
+        pageTitle: 'Dossier Médical',
+        onBack: () {
+          Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => MainLayout())
+          );
+        },
       ),
       body: Center(
         child: Card(
           margin: EdgeInsets.all(16.0),
           elevation: 4, // Élévation de la carte
-          color: Colors.blueGrey,
+          color: Colors.white,
           child: ListView(
             children: [
               Padding(

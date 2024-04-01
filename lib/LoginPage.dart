@@ -6,6 +6,7 @@ import 'package:pfa2/home/HomeScreen.dart';
 import 'package:pfa2/home/Main_layout.dart';
 import 'package:pfa2/main.dart';
 
+import 'medecin/Mainlayout.dart';
 import 'medecin/MedecinScreen.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -39,7 +40,7 @@ class _LoginScreenState extends State<LoginScreen> {
       } else if (role == 'Médecin') {
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => MedecinScreen()), // Page pour les médecins
+          MaterialPageRoute(builder: (context) =>  MainLayoutt()), // Page pour les médecins
         );
       } else {
         // Redirection par défaut vers la page d'accueil générale
@@ -71,7 +72,11 @@ class _LoginScreenState extends State<LoginScreen> {
         backgroundColor: Colors.white,
         leading: IconButton(
           onPressed: () {
-            Navigator.pop(context);
+            Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (context) => HomePage())
+            );
+
           },
           icon: Icon(
             Icons.arrow_back_ios,
@@ -93,7 +98,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   Column(
                     children: <Widget>[
                       Text(
-                        "Login",
+                        "Se connecter",
                         style: TextStyle(
                           fontSize: 30,
                           fontWeight: FontWeight.bold,
@@ -101,10 +106,20 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                       SizedBox(height: 20),
                       Text(
-                        "Login to your account",
+                        "Connectez-vous à votre compte",
                         style: TextStyle(
                           fontSize: 15,
                           color: Colors.grey[700],
+                        ),
+                      ),
+                      Container(
+                        padding: EdgeInsets.only(top: 100),
+                        height: 230,
+                        decoration: BoxDecoration(
+                          image: DecorationImage(
+                            image: AssetImage("images/Logo-DocDash.png"),
+                            fit: BoxFit.fitHeight,
+                          ),
                         ),
                       )
                     ],
@@ -128,7 +143,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           controller: _passwordController,
                           obscureText: true,
                           decoration: InputDecoration(
-                            labelText: 'Password',
+                            labelText: 'Mot de passe',
                             prefixIcon: Icon(Icons.lock),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(10.0),
@@ -151,12 +166,12 @@ class _LoginScreenState extends State<LoginScreen> {
                         height: 60,
                         onPressed: () => signIn(context),
                         color: Color(0xff0095FF),
-                        elevation: 0,
+                        elevation: 5,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(50),
                         ),
                         child: Text(
-                          "Login",
+                          "Se connecter",
                           style: TextStyle(
                             fontWeight: FontWeight.w600,
                             fontSize: 18,
@@ -169,9 +184,9 @@ class _LoginScreenState extends State<LoginScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
-                      Text("Don't have an account?"),
+                      Text("Vous n'avez pas de compte ?"),
                       Text(
-                        " Sign up",
+                        " S'inscrire",
                         style: TextStyle(
                           fontWeight: FontWeight.w600,
                           fontSize: 18,
@@ -179,16 +194,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       )
                     ],
                   ),
-                  Container(
-                    padding: EdgeInsets.only(top: 100),
-                    height: 200,
-                    decoration: BoxDecoration(
-                      /*image: DecorationImage(
-                        image: AssetImage("assets/background.png"),
-                        fit: BoxFit.fitHeight,
-                      ),*/
-                    ),
-                  )
+
                 ],
               ),
             )

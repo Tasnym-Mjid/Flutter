@@ -3,7 +3,11 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:pfa2/Patient/ProfilPatient.dart';
+import 'package:pfa2/home/Main_layout.dart';
 import 'package:pfa2/pickImage.dart';
+
+import '../home/AppBar.dart';
 
 class EditPatientInfoScreen extends StatefulWidget {
   final String userId;
@@ -71,8 +75,15 @@ class _EditPatientInfoScreenState extends State<EditPatientInfoScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Modifier les informations'),
+      appBar: CustomAppBar(
+        pageTitle: 'Modifier les informations',
+        onBack: () {
+
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => MainLayout()),
+          );
+        } ,
       ),
       body: SingleChildScrollView(
         child: Center(

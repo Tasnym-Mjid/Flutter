@@ -2,18 +2,22 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+import '../home/AppBar.dart';
+import '../home/Main_layout.dart';
+
 class EmergencyServiceScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          'Service d\'urgence',
-          style: TextStyle(
-            fontWeight: FontWeight.bold, // Texte en gras
-            color: Colors.blue, // Couleur bleue
-          ),
-        ),
+      appBar: CustomAppBar(
+        pageTitle: 'Service d\'urgence',
+        onBack: () {
+
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => MainLayout()),
+          );
+        } ,
       ),
       body: StreamBuilder<QuerySnapshot>(
         stream: FirebaseFirestore.instance.collection('doctors').snapshots(),

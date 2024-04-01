@@ -4,7 +4,10 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:pfa2/medecin/Mainlayout.dart';
+import 'package:pfa2/medecin/MedecinProfileScreen.dart';
 
+import '../home/AppBar.dart';
 import '../pickImage.dart';
 
 class ReglageMedecin extends StatefulWidget {
@@ -22,6 +25,8 @@ class _ReglageMedecinState extends State<ReglageMedecin> {
   late TextEditingController _addressController;
   late TextEditingController _phoneNumberController;
   late TextEditingController _disponibiliteController;
+  late TextEditingController _specialiteController;
+
 
   Uint8List? _image;
 
@@ -40,6 +45,8 @@ class _ReglageMedecinState extends State<ReglageMedecin> {
     _addressController = TextEditingController();
     _phoneNumberController = TextEditingController();
     _disponibiliteController = TextEditingController();
+    _specialiteController= TextEditingController();
+
 
     FirebaseFirestore.instance
         .collection('medecins')
@@ -56,6 +63,7 @@ class _ReglageMedecinState extends State<ReglageMedecin> {
             _addressController.text = data['address'] ?? '';
             _disponibiliteController.text =
             data['disponibilite'] != null ? data['disponibilite'].toString() : '';
+            _specialiteController.text= data['spécialité'] ?? '';
           });
         }
       }
@@ -69,14 +77,23 @@ class _ReglageMedecinState extends State<ReglageMedecin> {
     _phoneNumberController.dispose();
     _addressController.dispose();
     _disponibiliteController.dispose();
+    _specialiteController.dispose();
+
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Modifier les informations'),
+      appBar: CustomAppBar(
+        pageTitle: 'Modifier les informations',
+        onBack: () {
+
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => MainLayoutt()),
+          );
+        } ,
       ),
       body: SingleChildScrollView(
         child: Center(
@@ -165,6 +182,15 @@ class _ReglageMedecinState extends State<ReglageMedecin> {
                     ),
                     SizedBox(height: 10),
                     TextField(
+                      controller: _specialiteController,
+                      decoration: InputDecoration(
+                        labelText: 'Spécialité',
+                        border: OutlineInputBorder(),
+                        filled: true,
+                        fillColor: Colors.white,
+                      ),
+                    ),
+                    TextField(
                       controller: _addressController,
                       decoration: InputDecoration(
                         labelText: 'Adresse',
@@ -202,6 +228,7 @@ class _ReglageMedecinState extends State<ReglageMedecin> {
                           'address': _addressController.text,
                           'phoneNumber': _phoneNumberController.text,
                           'disponibilite': _disponibiliteController.text.toLowerCase() == 'true',
+                          'spécialité':_specialiteController.text
                         }).then((_) {
                           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                             content: Text('Informations mises à jour avec succès'),

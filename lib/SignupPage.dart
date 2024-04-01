@@ -150,7 +150,7 @@ class SignUpScreen extends StatelessWidget {
               Column(
                 children: <Widget>[
                   Text(
-                    "Sign up",
+                    "S'inscrire",
                     style: TextStyle(
                       fontSize: 30,
                       fontWeight: FontWeight.bold,
@@ -158,7 +158,7 @@ class SignUpScreen extends StatelessWidget {
                   ),
                   SizedBox(height: 20,),
                   Text(
-                    "Create an account, It's free ",
+                    "Créer un compte, c'est gratuit ",
                     style: TextStyle(
                       fontSize: 15,
                       color: Colors.grey[700],
@@ -171,7 +171,7 @@ class SignUpScreen extends StatelessWidget {
                   TextFormField(
                     controller: _usernameController,
                     decoration: InputDecoration(
-                      labelText: 'Username',
+                      labelText: 'Nom',
                       prefixIcon: Icon(Icons.person),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10.0),
@@ -182,7 +182,7 @@ class SignUpScreen extends StatelessWidget {
                   TextFormField(
                     controller: _lastNameController,
                     decoration: InputDecoration(
-                      labelText: 'Lastname',
+                      labelText: 'Prénom',
                       prefixIcon: Icon(Icons.person),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10.0),
@@ -224,7 +224,7 @@ class SignUpScreen extends StatelessWidget {
                   TextFormField(
                     controller: _passwordController,
                     decoration: InputDecoration(
-                      labelText: 'Password',
+                      labelText: 'Mot de passe',
                       prefixIcon: Icon(Icons.lock),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10.0),
@@ -236,7 +236,7 @@ class SignUpScreen extends StatelessWidget {
                   TextFormField(
                     controller: _confirmPasswordController,
                     decoration: InputDecoration(
-                      labelText: 'Confirm Password',
+                      labelText: 'Confirme Mot de passe',
                       prefixIcon: Icon(Icons.lock),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10.0),
@@ -267,7 +267,7 @@ class SignUpScreen extends StatelessWidget {
                     borderRadius: BorderRadius.circular(50),
                   ),
                   child: Text(
-                    "Sign up",
+                    "S'inscire",
                     style: TextStyle(
                       fontWeight: FontWeight.w600,
                       fontSize: 18,
@@ -279,9 +279,9 @@ class SignUpScreen extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
-                  Text("Already have an account?"),
+                  Text("Avez vous déjà un compte?"),
                   Text(
-                    " Login",
+                    " Se connecter",
                     style: TextStyle(
                       fontWeight: FontWeight.w600,
                       fontSize: 18,

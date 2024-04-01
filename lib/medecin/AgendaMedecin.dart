@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
+import 'package:pfa2/medecin/Mainlayout.dart';
+import 'package:pfa2/medecin/MedecinScreen.dart';
+
+import '../home/AppBar.dart';
 
 class AgendaMedecin extends StatelessWidget {
   final String medecinId;
@@ -11,13 +15,15 @@ class AgendaMedecin extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          'Agenda du Médecin',
-          style: TextStyle(
-            color: Colors.blue, // Changer la couleur du texte en bleu
-          ),
-        ),
+      appBar: CustomAppBar(
+        pageTitle: 'Agenda du médecin',
+        onBack: () {
+
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => MainLayoutt()),
+          );
+        } ,
       ),
       body: StreamBuilder<QuerySnapshot>(
         stream: FirebaseFirestore.instance

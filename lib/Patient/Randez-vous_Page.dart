@@ -2,6 +2,9 @@ import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:pfa2/Patient/ListMedecin.dart';
+
+import '../home/AppBar.dart';
 
 class AppointmentScreen extends StatefulWidget {
   final String medecinId;
@@ -194,25 +197,16 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      bottomNavigationBar: CurvedNavigationBar(
-        backgroundColor: Colors.transparent,
-        buttonBackgroundColor: Colors.blue,
-        color: Colors.blue,
-        animationDuration: const Duration(milliseconds: 300),
-        items: const <Widget>[
-          Icon(Icons.home, size: 26, color: Colors.white),
-          Icon(Icons.account_circle_outlined, size: 26, color: Colors.white),
-          Icon(Icons.add_alert, size: 26, color: Colors.white),
-        ],
-      ),
-      appBar: AppBar(
-        title: Text(
-          '',
-          style: TextStyle(
-            fontSize: 30,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
+
+      appBar: CustomAppBar(
+        pageTitle: '',
+        onBack: () {
+
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => ListMedecin()),
+          );
+        } ,
       ),
       body: SingleChildScrollView(
         child: Center(

@@ -1,11 +1,14 @@
-import 'package:flutter/material.dart';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:curved_navigation_bar/curved_navigation_bar.dart';
+import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import '../Dossier medical/DossierMedicalPage.dart';
+import '../Patient/AskDoctorScreen.dart';
+import '../Patient/ListMedecin.dart';
+import '../Patient/EmergencyServiceScreen.dart';
 import 'package:intl/intl.dart';
 
-import '../Dossier medical/DossierMedicalPage.dart';
-import '../Patient/EmergencyServiceScreen.dart';
-import '../Patient/ListMedecin.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -113,14 +116,10 @@ class _HomeScreenState extends State<HomeScreen> {
                       fontSize:24,
                       fontWeight:FontWeight.bold,
                     ),),
-                  Container(
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    padding: EdgeInsets.all(16),
-                    child:Icon(Icons.settings,
-                        color:Colors.blue,size: 30),
+                  Image.asset(
+                    'images/Logo-DocDash.png', // Chemin de l'image locale
+                    height: 80, // Ajustez la taille selon vos besoins
+                    // width: 40,
                   ),
                 ],
               ),
@@ -146,7 +145,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     );
                   },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.blue[300],
+                      backgroundColor: Colors.blue,
                       elevation: 8,
                     ),
 
@@ -178,7 +177,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     );
                   },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.blue[300],
+                      backgroundColor: Colors.blue,
                       elevation: 8,
                     ),
 
@@ -204,13 +203,42 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ),
                   SizedBox(height: 16,),
+
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => AskDoctorScreen()));
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.blue,
+                      elevation: 8,
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        Icon(
+                          Icons.local_hospital,
+                          color: Colors.black,
+                        ),
+                        SizedBox(width: 8),
+                        Text(
+                          "Demander un avis de médecin",
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 18,
+                            color: Colors.black,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  SizedBox(height: 16),
                   ElevatedButton(onPressed:(){
                     Navigator.pushReplacement(context,
                         MaterialPageRoute(builder: (context) => EmergencyServiceScreen())
                     );
                   },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.blue[300],
+                      backgroundColor: Colors.blue,
                       elevation: 8,
                     ),
 
@@ -255,8 +283,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: appointments.isEmpty
                     ? Center(child: Text('Aucun rendez-vous pour aujourd\'hui'))
                     : ListView.builder(
-                      itemCount: appointments.length,
-                      itemBuilder: (context, index) {
+                  itemCount: appointments.length,
+                  itemBuilder: (context, index) {
                     // Récupérez les détails du rendez-vous
                     Map<String, dynamic> appointmentData = appointments[index].data() as Map<String, dynamic>;
                     TimeOfDay time = TimeOfDay(
@@ -265,9 +293,9 @@ class _HomeScreenState extends State<HomeScreen> {
                     );
 
                     // Formattez l'heure du rendez-vous
-                     String formattedTime = DateFormat.jm().format(DateTime(1, 1, 1, time.hour, time.minute));
+                    String formattedTime = DateFormat.jm().format(DateTime(1, 1, 1, time.hour, time.minute));
 
-                     return Card(
+                    return Card(
                       shadowColor: Colors.blue,
                       elevation: 8,
                       margin: EdgeInsets.symmetric(vertical: 8.0),
@@ -334,7 +362,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 child: Text('Terminer',
                                   style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black),),
                                 style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.blue[300],
+                                  backgroundColor: Colors.blue,
                                   elevation: 8,
                                 ),                              ),
                             ],

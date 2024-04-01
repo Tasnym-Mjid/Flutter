@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'PatientsListScreen.dart'; // Importez l'écran de liste des patients ici
 import 'MedecinProfileScreen.dart'; // Importez l'écran du profil du médecin ici
+import 'DonnerAvis.dart'; // Importez l'écran pour donner un avis ici
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'AgendaMedecin.dart';
 
 class MedecinScreen extends StatelessWidget {
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -19,10 +21,10 @@ class MedecinScreen extends StatelessWidget {
           ),
         ),
         actions: <Widget>[
-          IconButton(
-            onPressed: () {},
-            icon: const Icon(Icons.settings, size: 26),
-            color: Colors.blue,
+          Image.asset(
+            'images/Logo-DocDash.png', // Chemin de l'image locale
+            height: 100, // Ajustez la taille selon vos besoins
+            // width: 40,
           ),
         ],
       ),
@@ -145,39 +147,45 @@ class MedecinScreen extends StatelessWidget {
                 ],
               ),
             ),
+            SizedBox(height: 20),
+            MaterialButton(
+              minWidth: double.infinity,
+              height: 60,
+              onPressed: () {
+                // Naviguer vers la page pour donner un avis
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => MedecinQuestionsScreen()),
+                );
+              },
+              color: Color(0xff0095FF),
+              elevation: 0,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(50),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Icon(
+                    Icons.warning,
+                    color: Colors.white,
+                  ),
+                  SizedBox(width: 8),
+                  Text(
+                    "Donner un avis",
+                    style: TextStyle(
+                      fontWeight: FontWeight.w600,
+                      fontSize: 18,
+                      color: Colors.white,
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ],
         ),
       ),
-      bottomNavigationBar: CurvedNavigationBar(
-        backgroundColor: Colors.transparent,
-        buttonBackgroundColor: Colors.blue,
-        color: Colors.blue,
-        animationDuration: const Duration(milliseconds: 300),
-        items: const <Widget>[
-          Icon(Icons.home, size: 26, color: Colors.white),
-          Icon(Icons.account_circle_outlined, size: 26, color: Colors.white),
-          Icon(Icons.add_alert, size: 26, color: Colors.white),
-        ],
-        onTap: (index) {
-          // Actions à effectuer lors de la navigation entre les onglets
-          switch (index) {
-            case 0:
-            // Action pour l'onglet Accueil
-              break;
-            case 1:
-            // Naviguer vers l'écran du profil du médecin
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => MedecinProfileScreen()),
-              );
-              break;
-            case 2:
-            // Action pour l'onglet Notifications
-              break;
-            default:
-          }
-        },
-      ),
+
     );
   }
 }

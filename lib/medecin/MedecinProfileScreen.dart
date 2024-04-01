@@ -31,10 +31,15 @@ class _MedecinProfileScreenState extends State<MedecinProfileScreen> {
     _context=context;
     return Scaffold(
       appBar: AppBar(
-          backgroundColor: Colors.transparent,
-          elevation: 0,
-          title: Text('Profile',
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),),
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        leading: Image.asset(
+          'images/Logo-DocDash.png', // Chemin de l'image locale
+          height: 100, // Ajustez la taille selon vos besoins
+          // width: 40,
+        ),
+        title: Text('Profile',
+          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),),
         actions: [
           IconButton(
             onPressed: () {
